@@ -1,26 +1,117 @@
 ---
 import Base from '../layouts/Base.astro';
+import { getCollection } from 'astro:content';
+
+const allProjects = await getCollection('projects');
+const featured = allProjects
+  .filter(p => p.data.featured)
+  .sort((a, b) => (b.data.date ?? '').localeCompare(a.data.date ?? ''));
+const rest = allProjects
+  .filter(p => !p.data.featured)
+  .sort((a, b) => (b.data.date ?? '').localeCompare(a.data.date ?? ''));
+const projects = [...featured, ...rest].slice(0, 3);
 ---
 <Base title="Home">
-  <section>
-    <p class="muted" style="font-size:0.9rem; margin-bottom: 0.5rem;">UC Berkeley IEOR · Graduating 2026</p>
-    <h1>Nick Fitzpatrick</h1>
-    <p style="font-size:1.15rem; color: var(--muted); max-width: 520px; margin-bottom: 2rem;">
-      AI product and operations. I build systems that connect machine learning to real decisions —
-      from last-mile logistics to generative design for architecture.
-    </p>
-    <div style="display:flex; gap:1rem; flex-wrap:wrap;">
-      <a href="/projects" style="background:var(--accent); color:#0f0f0f; padding:0.6rem 1.2rem; border-radius:6px; font-weight:600; font-size:0.9rem;">View Projects</a>
-      <a href="/resume" style="border:1px solid var(--border); color:var(--text); padding:0.6rem 1.2rem; border-radius:6px; font-size:0.9rem;">Resume</a>
+
+  <!-- Hero -->
+  <section style="display:grid; grid-template-columns:1fr 340px; gap:4rem; align-items:center; margin-bottom:5rem;">
+    <div>
+      <p class="eyebrow fade-up">AI Product &amp; Operations</p>
+      <h1 class="fade-up-1">Nick<br/>Fitzpatrick</h1>
+      <p class="fade-up-2" style="font-size:1.1rem; color:var(--muted); max-width:480px; margin-bottom:2rem; line-height:1.75;">
+        I build systems that connect machine learning to real decisions —
+        from last-mile logistics to generative design for architecture.
+      </p>
+      <div class="fade-up-3" style="display:flex; gap:0.75rem; flex-wrap:wrap;">
+        <a href="/projects" class="btn-primary">View Projects</a>
+        <a href="/resume" class="btn-secondary">Resume</a>
+      </div>
+    </div>
+
+    <!-- Photo placeholder -- replace src with your actual photo -->
+    <div class="fade-up-2" style="
+      width:100%;
+      aspect-ratio:4/5;
+      border-radius:16px;
+      background:var(--surface);
+      border:1px solid var(--border);
+      display:flex;
+      flex-direction:column;
+      align-items:center;
+      justify-content:center;
+      color:var(--muted);
+      font-size:0.8rem;
+      gap:0.5rem;
+      position:relative;
+      overflow:hidden;
+    ">
+      <div style="
+        position:absolute;
+        inset:0;
+        background:radial-gradient(ellipse at 60% 30%, var(--accent-glow), transparent 70%);
+        pointer-events:none;
+      "></div>
+      <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" style="opacity:0.3;">
+        <circle cx="12" cy="8" r="4"/>
+        <path d="M4 20c0-4 3.6-7 8-7s8 3 8 7"/>
+      </svg>
+      <span style="opacity:0.4;">Add your photo</span>
     </div>
   </section>
 
-  <section style="margin-top:4rem;">
-    <h2>Currently</h2>
-    <ul style="list-style:none; display:flex; flex-direction:column; gap:0.6rem;">
-      <li><span class="muted">→</span> Product &amp; data engineering intern at <strong>Geopogo</strong> (AI visualization for architecture)</li>
-      <li><span class="muted">→</span> Building <strong>RouteMorph</strong> — explainable AI for last-mile delivery optimization</li>
-      <li><span class="muted">→</span> Contract AI/RLHF data work</li>
+  <!-- Currently -->
+  <section style="border-top:1px solid var(--border); padding-top:2.5rem; margin-bottom:4rem;">
+    <h2 style="font-size:0.75rem; text-transform:uppercase; letter-spacing:0.1em; color:var(--muted); margin-bottom:1.25rem; font-weight:500;">Currently</h2>
+    <ul style="list-style:none; display:flex; flex-direction:column; gap:0.65rem;">
+      <li style="display:flex; align-items:baseline; gap:0.75rem; color:var(--muted); font-size:0.95rem;">
+        <span style="width:5px; height:5px; background:var(--accent); border-radius:50%; flex-shrink:0; margin-top:0.5rem; display:inline-block;"></span>
+        Product &amp; data engineering intern at <strong style="color:var(--text); margin-left:0.3rem;">Geopogo</strong>&nbsp;— AI visualization for architecture
+      </li>
+      <li style="display:flex; align-items:baseline; gap:0.75rem; color:var(--muted); font-size:0.95rem;">
+        <span style="width:5px; height:5px; background:var(--accent); border-radius:50%; flex-shrink:0; margin-top:0.5rem; display:inline-block;"></span>
+        Building <strong style="color:var(--text); margin-left:0.3rem;">RouteMorph</strong>&nbsp;— explainable AI for last-mile delivery optimization
+      </li>
+      <li style="display:flex; align-items:baseline; gap:0.75rem; color:var(--muted); font-size:0.95rem;">
+        <span style="width:5px; height:5px; background:var(--accent); border-radius:50%; flex-shrink:0; margin-top:0.5rem; display:inline-block;"></span>
+        Contract AI/RLHF data work
+      </li>
     </ul>
   </section>
+
+  <!-- Featured Projects -->
+  <section>
+    <div style="display:flex; justify-content:space-between; align-items:baseline; margin-bottom:1.5rem;">
+      <h2 style="font-size:1.1rem; font-weight:700; letter-spacing:-0.02em;">Selected Projects</h2>
+      <a href="/projects" style="font-size:0.8rem; color:var(--accent);">View all →</a>
+    </div>
+    <div class="project-grid">
+      {projects.map((p, i) => (
+        <div class={`project-card fade-up-${Math.min(i + 1, 3)}`}>
+          <div class="project-card-img">
+            <span>Project image</span>
+          </div>
+          <div class="project-card-body">
+            <h3><a href={`/projects/${p.slug}`}>{p.data.title}</a></h3>
+            <p>{p.data.summary}</p>
+            <div class="tag-row">
+              {p.data.tags.slice(0, 3).map((t: string) => <span class="tag">{t}</span>)}
+              {p.data.status && <span class={`tag ${p.data.status === 'In Progress' ? 'accent' : ''}`}>{p.data.status}</span>}
+            </div>
+          </div>
+        </div>
+      ))}
+    </div>
+  </section>
+
 </Base>
+
+<style>
+  @media (max-width: 700px) {
+    section:first-of-type {
+      grid-template-columns: 1fr !important;
+    }
+    section:first-of-type > div:last-child {
+      display: none;
+    }
+  }
+</style>

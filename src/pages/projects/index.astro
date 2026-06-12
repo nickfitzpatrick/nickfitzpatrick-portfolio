@@ -4,30 +4,37 @@ import Base from '../../layouts/Base.astro';
 
 const allProjects = await getCollection('projects');
 const projects = allProjects.sort((a, b) => {
-  // featured first, then by date descending
   if (a.data.featured && !b.data.featured) return -1;
   if (!a.data.featured && b.data.featured) return 1;
   return (b.data.date ?? '').localeCompare(a.data.date ?? '');
 });
 ---
 <Base title="Projects">
-  <h1>Projects</h1>
-  <p class="muted" style="margin-bottom:2.5rem;">
+  <p class="eyebrow">Work</p>
+  <h1 style="margin-bottom:0.75rem;">Projects</h1>
+  <p class="muted" style="margin-bottom:3rem; max-width:520px;">
     Selected work from grad school, internships, and independent projects.
   </p>
 
-  {projects.map(p => (
-    <div class="project-card">
-      <h2><a href={`/projects/${p.slug}`}>{p.data.title}</a></h2>
-      <p class="muted">{p.data.summary}</p>
-      <div class="tag-row">
-        {p.data.tags.map((t: string) => <span class="tag">{t}</span>)}
-        {p.data.status && (
-          <span class="tag" style="color:var(--accent); border-color:var(--accent);">
-            {p.data.status}
-          </span>
-        )}
+  <div class="project-grid">
+    {projects.map((p, i) => (
+      <div class={`project-card fade-up-${Math.min(i + 1, 3)}`}>
+        <div class="project-card-img">
+          <span>Project image</span>
+        </div>
+        <div class="project-card-body">
+          <h3><a href={`/projects/${p.slug}`}>{p.data.title}</a></h3>
+          <p>{p.data.summary}</p>
+          <div class="tag-row">
+            {p.data.tags.map((t: string) => <span class="tag">{t}</span>)}
+            {p.data.status && (
+              <span class={`tag ${p.data.status === 'In Progress' ? 'accent' : ''}`}>
+                {p.data.status}
+              </span>
+            )}
+          </div>
+        </div>
       </div>
-    </div>
-  ))}
+    ))}
+  </div>
 </Base>
