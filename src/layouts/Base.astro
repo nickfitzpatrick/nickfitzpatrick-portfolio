@@ -1,0 +1,39 @@
+---
+interface Props {
+  title: string;
+  description?: string;
+}
+const { title, description = "Nick Fitzpatrick — AI Product & Operations" } = Astro.props;
+---
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description" content={description} />
+  <title>{title} | Nick Fitzpatrick</title>
+  <link rel="stylesheet" href="/styles/global.css" />
+</head>
+<body>
+  <header>
+    <nav>
+      <a href="/" class="nav-logo">Nick Fitzpatrick</a>
+      <ul>
+        <li><a href="/projects">Projects</a></li>
+        <li><a href="/resume">Resume</a></li>
+        <li><a href="/about">About</a></li>
+      </ul>
+    </nav>
+  </header>
+  <main>
+    <slot />
+  </main>
+  <footer>
+    <p>
+      <a href="https://github.com/nickfitzpatrick" target="_blank">GitHub</a> ·
+      <a href="https://linkedin.com/in/nickfitzpatrick" target="_blank">LinkedIn</a> ·
+      <a href="mailto:nickf5624@gmail.com">Email</a>
+    </p>
+  </footer>
+</body>
+</html>

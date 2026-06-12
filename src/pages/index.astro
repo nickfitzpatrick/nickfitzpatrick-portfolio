@@ -1,0 +1,26 @@
+---
+import Base from '../layouts/Base.astro';
+---
+<Base title="Home">
+  <section>
+    <p class="muted" style="font-size:0.9rem; margin-bottom: 0.5rem;">UC Berkeley IEOR · Graduating 2026</p>
+    <h1>Nick Fitzpatrick</h1>
+    <p style="font-size:1.15rem; color: var(--muted); max-width: 520px; margin-bottom: 2rem;">
+      AI product and operations. I build systems that connect machine learning to real decisions —
+      from last-mile logistics to generative design for architecture.
+    </p>
+    <div style="display:flex; gap:1rem; flex-wrap:wrap;">
+      <a href="/projects" style="background:var(--accent); color:#0f0f0f; padding:0.6rem 1.2rem; border-radius:6px; font-weight:600; font-size:0.9rem;">View Projects</a>
+      <a href="/resume" style="border:1px solid var(--border); color:var(--text); padding:0.6rem 1.2rem; border-radius:6px; font-size:0.9rem;">Resume</a>
+    </div>
+  </section>
+
+  <section style="margin-top:4rem;">
+    <h2>Currently</h2>
+    <ul style="list-style:none; display:flex; flex-direction:column; gap:0.6rem;">
+      <li><span class="muted">→</span> Product &amp; data engineering intern at <strong>Geopogo</strong> (AI visualization for architecture)</li>
+      <li><span class="muted">→</span> Building <strong>RouteMorph</strong> — explainable AI for last-mile delivery optimization</li>
+      <li><span class="muted">→</span> Contract AI/RLHF data work</li>
+    </ul>
+  </section>
+</Base>

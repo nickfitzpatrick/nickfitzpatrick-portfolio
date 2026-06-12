@@ -1,0 +1,31 @@
+---
+import Base from '../../layouts/Base.astro';
+
+const projects = [
+  {
+    slug: 'routemorph',
+    title: 'RouteMorph',
+    summary: 'Explainable AI for last-mile delivery route optimization with a conversational interface.',
+    tags: ['Python', 'ML', 'Optimization', 'Streamlit'],
+    status: 'In Progress',
+  },
+  // Add more projects here as you build them out
+];
+---
+<Base title="Projects">
+  <h1>Projects</h1>
+  <p class="muted" style="margin-bottom:2.5rem;">
+    Selected work from grad school, internships, and independent projects.
+  </p>
+
+  {projects.map(p => (
+    <div class="project-card">
+      <h2><a href={`/projects/${p.slug}`}>{p.title}</a></h2>
+      <p class="muted">{p.summary}</p>
+      <div class="tag-row">
+        {p.tags.map(t => <span class="tag">{t}</span>)}
+        {p.status && <span class="tag" style="color:var(--accent); border-color:var(--accent);">{p.status}</span>}
+      </div>
+    </div>
+  ))}
+</Base>
