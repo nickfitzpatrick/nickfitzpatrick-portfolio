@@ -17,24 +17,19 @@
       padding: 2rem;
     }
 
-    .switcher {
-      display: flex;
-      gap: 1rem;
-      margin-bottom: 2.5rem;
-      align-items: center;
+    .comparison {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 2rem;
+      margin-bottom: 2rem;
     }
-    .switcher span { color: #666; font-size: 0.85rem; }
-    .btn {
-      padding: 0.5rem 1.25rem;
-      border-radius: 6px;
-      border: 1px solid #333;
-      background: transparent;
-      color: #e8e8e8;
-      cursor: pointer;
-      font-size: 0.875rem;
-      transition: all 0.2s;
+    .theme-label {
+      font-size: 0.75rem;
+      color: #555;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      margin-bottom: 0.75rem;
     }
-    .btn.active { border-color: var(--accent); color: var(--accent); }
 
     /* ── Cyan theme ── */
     .theme-cyan { --accent: #38BDF8; --accent-dim: rgba(56,189,248,0.12); --accent-glow: rgba(56,189,248,0.25); }
@@ -56,6 +51,7 @@
       display: none;
     }
     .preview.active { display: block; }
+    .preview { display: block; }
 
     /* ── Nav ── */
     .p-nav {
@@ -235,14 +231,10 @@
 </head>
 <body>
 
-<div class="switcher">
-  <span>Accent color:</span>
-  <button class="btn active" onclick="setTheme('cyan', this)">Cyan #38BDF8</button>
-  <button class="btn" onclick="setTheme('slate', this)">Slate #7B8CDE</button>
-</div>
-
-<!-- ══ PREVIEW WRAPPER ══ -->
-<div id="preview" class="preview theme-cyan active">
+<div class="comparison">
+<div>
+<p class="theme-label">Option A — Cyan #38BDF8</p>
+<div class="preview theme-cyan active">
 
   <!-- Nav -->
   <nav class="p-nav">
@@ -346,15 +338,110 @@
 
 </div>
 
-<p class="note">This is a design preview only — not linked from the main site. Visit <code>/dev/preview</code> to evaluate.</p>
+</div>
+</div>
 
-<script>
-  function setTheme(theme, btn) {
-    const preview = document.getElementById('preview');
-    preview.className = `preview theme-${theme} active`;
-    document.querySelectorAll('.btn').forEach(b => b.classList.remove('active'));
-    btn.classList.add('active');
-  }
-</script>
+<div>
+<p class="theme-label">Option B — Slate #7B8CDE</p>
+<div class="preview theme-slate active">
+
+  <nav class="p-nav">
+    <span class="p-nav-logo">Nick Fitzpatrick</span>
+    <ul>
+      <li><a href="#">Projects</a></li>
+      <li><a href="#">Resume</a></li>
+      <li><a href="#">About</a></li>
+    </ul>
+  </nav>
+
+  <section class="p-hero">
+    <div class="p-hero-text">
+      <p class="p-eyebrow">AI Product &amp; Operations</p>
+      <h1 class="p-h1">Nick<br/>Fitzpatrick</h1>
+      <p class="p-tagline">
+        I build systems that connect machine learning to real decisions —
+        from last-mile logistics to generative design for architecture.
+      </p>
+      <div class="p-cta">
+        <a href="#" class="p-btn-primary">View Projects</a>
+        <a href="#" class="p-btn-secondary">Resume</a>
+      </div>
+    </div>
+    <div class="p-photo">
+      <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+        <circle cx="12" cy="8" r="4"/>
+        <path d="M4 20c0-4 3.6-7 8-7s8 3 8 7"/>
+      </svg>
+      <span>Your photo here</span>
+    </div>
+  </section>
+
+  <div class="p-currently">
+    <h2>Currently</h2>
+    <ul>
+      <li><span class="dot"></span><span>Product &amp; data engineering intern at <strong>Geopogo</strong> — AI visualization for architecture</span></li>
+      <li><span class="dot"></span><span>Building <strong>RouteMorph</strong> — explainable AI for last-mile delivery optimization</span></li>
+      <li><span class="dot"></span><span>Contract AI/RLHF data work</span></li>
+    </ul>
+  </div>
+
+  <section class="p-projects">
+    <div class="p-section-header">
+      <h2>Selected Projects</h2>
+      <a href="#">View all →</a>
+    </div>
+    <div class="p-grid">
+      <div class="p-card">
+        <div class="p-card-img"><span>Project image</span></div>
+        <div class="p-card-body">
+          <h3>RouteMorph</h3>
+          <p>Explainable AI for last-mile delivery route optimization with a conversational interface.</p>
+          <div class="p-tags">
+            <span class="p-tag">Python</span>
+            <span class="p-tag">OR-Tools</span>
+            <span class="p-tag">ML</span>
+            <span class="p-tag accent">In Progress</span>
+          </div>
+        </div>
+      </div>
+      <div class="p-card">
+        <div class="p-card-img"><span>Project image</span></div>
+        <div class="p-card-body">
+          <h3>Geopogo ADA Tool</h3>
+          <p>AI-powered ADA compliance checker for architectural drawings using computer vision.</p>
+          <div class="p-tags">
+            <span class="p-tag">Python</span>
+            <span class="p-tag">CV</span>
+            <span class="p-tag">Streamlit</span>
+          </div>
+        </div>
+      </div>
+      <div class="p-card">
+        <div class="p-card-img"><span>Project image</span></div>
+        <div class="p-card-body">
+          <h3>Weekend Project</h3>
+          <p>Placeholder for gap-filling project TBD based on resume analysis.</p>
+          <div class="p-tags">
+            <span class="p-tag">TBD</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <footer class="p-footer">
+    <span>nickfitzpatrick.dev</span>
+    <div class="p-footer-links">
+      <a href="#">GitHub</a>
+      <a href="#">LinkedIn</a>
+      <a href="#">Email</a>
+    </div>
+  </footer>
+
+</div>
+</div>
+</div>
+
+<p class="note">Design preview — not linked from main nav.</p>
 </body>
 </html>
