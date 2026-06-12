@@ -1,0 +1,107 @@
+---
+import Base from './Base.astro';
+
+interface Props {
+  title: string;
+  summary: string;
+  tags: string[];
+  status?: string;
+  date?: string;
+  github?: string;
+  demo?: string;
+}
+
+const { title, summary, tags, status, date, github, demo } = Astro.props;
+---
+<Base title={title} description={summary}>
+  <a href="/projects" class="muted" style="font-size:0.9rem;">← Projects</a>
+
+  <div style="margin-top:1.25rem; margin-bottom:0.5rem;">
+    {date && <span class="muted" style="font-size:0.85rem;">{date}</span>}
+  </div>
+
+  <h1>{title}</h1>
+  <p style="font-size:1.1rem; color:var(--muted); margin-bottom:1.25rem;">{summary}</p>
+
+  <div class="tag-row" style="margin-bottom:2rem;">
+    {tags.map(t => <span class="tag">{t}</span>)}
+    {status && (
+      <span class="tag" style="color:var(--accent); border-color:var(--accent);">{status}</span>
+    )}
+  </div>
+
+  {(github || demo) && (
+    <div style="display:flex; gap:1rem; margin-bottom:2.5rem; flex-wrap:wrap;">
+      {github && (
+        <a href={github} target="_blank"
+           style="border:1px solid var(--border); color:var(--text); padding:0.5rem 1rem; border-radius:6px; font-size:0.875rem;">
+          GitHub →
+        </a>
+      )}
+      {demo && (
+        <a href={demo} target="_blank"
+           style="background:var(--accent); color:#0f0f0f; padding:0.5rem 1rem; border-radius:6px; font-size:0.875rem; font-weight:600;">
+          Live Demo →
+        </a>
+      )}
+    </div>
+  )}
+
+  <hr style="border:none; border-top:1px solid var(--border); margin-bottom:2.5rem;" />
+
+  <div class="prose">
+    <slot />
+  </div>
+</Base>
+
+<style>
+  .prose :global(h2) {
+    font-size: 1.2rem;
+    font-weight: 600;
+    margin-top: 2rem;
+    margin-bottom: 0.5rem;
+    color: var(--text);
+  }
+  .prose :global(h3) {
+    font-size: 1rem;
+    font-weight: 600;
+    margin-top: 1.5rem;
+    margin-bottom: 0.4rem;
+    color: var(--muted);
+  }
+  .prose :global(p) {
+    color: var(--muted);
+    line-height: 1.75;
+    margin-bottom: 1rem;
+  }
+  .prose :global(ul), .prose :global(ol) {
+    color: var(--muted);
+    padding-left: 1.5rem;
+    margin-bottom: 1rem;
+    line-height: 1.75;
+  }
+  .prose :global(a) {
+    color: var(--accent);
+  }
+  .prose :global(code) {
+    font-family: var(--font-mono);
+    font-size: 0.85em;
+    background: var(--surface);
+    padding: 0.15em 0.4em;
+    border-radius: 3px;
+  }
+  .prose :global(pre) {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    padding: 1rem;
+    overflow-x: auto;
+    margin-bottom: 1.5rem;
+  }
+  .prose :global(blockquote) {
+    border-left: 3px solid var(--accent);
+    padding-left: 1rem;
+    color: var(--muted);
+    font-style: italic;
+  }
+</style>
