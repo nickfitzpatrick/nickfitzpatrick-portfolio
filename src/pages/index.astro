@@ -76,7 +76,10 @@ const projects = [...featured, ...rest].slice(0, 3);
       {projects.map((p, i) => (
         <div class={`project-card fade-up-${Math.min(i + 1, 3)}`}>
           <div class="project-card-img">
-            <span>Project image</span>
+            {p.data.image
+              ? <img src={p.data.image} alt={p.data.title} style="width:100%;height:100%;object-fit:cover;" />
+              : <span>Project image</span>
+            }
           </div>
           <div class="project-card-body">
             <h3><a href={`/projects/${p.slug}`}>{p.data.title}</a></h3>
