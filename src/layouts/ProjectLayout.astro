@@ -9,9 +9,10 @@ interface Props {
   date?: string;
   github?: string;
   demo?: string;
+  image?: string;
 }
 
-const { title, summary, tags, status, date, github, demo } = Astro.props;
+const { title, summary, tags, status, date, github, demo, image } = Astro.props;
 ---
 <Base title={title} description={summary}>
   <a href="/projects" class="muted" style="font-size:0.875rem;">← Projects</a>
@@ -32,6 +33,12 @@ const { title, summary, tags, status, date, github, demo } = Astro.props;
     <div style="display:flex; gap:0.75rem; margin-bottom:2.5rem; flex-wrap:wrap;">
       {github && <a href={github} target="_blank" class="btn-secondary">GitHub →</a>}
       {demo && <a href={demo} target="_blank" class="btn-primary">Live Demo →</a>}
+    </div>
+  )}
+
+  {image && (
+    <div style="margin-bottom:2.5rem; border-radius:8px; overflow:hidden; border:1px solid var(--border);">
+      <img src={image} alt={title} style="width:100%; display:block;" />
     </div>
   )}
 

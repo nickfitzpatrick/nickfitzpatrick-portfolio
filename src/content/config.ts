@@ -11,6 +11,7 @@ const projects = defineCollection({
     github: z.string().url().optional(),
     demo: z.string().url().optional(),
     featured: z.boolean().default(false),  // pin to top of projects page
+    image: z.string().optional(),          // path relative to /public, e.g. "/images/raid-cover.jpg"
   }),
 });
 
