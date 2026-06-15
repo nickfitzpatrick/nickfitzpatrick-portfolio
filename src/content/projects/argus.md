@@ -5,6 +5,7 @@ tags: [Python, MILP, Operations Research, PuLP, Skyfield, Optimization]
 status: Complete
 date: "2026-05"
 featured: true
+image: /images/argus-cover.png
 ---
 
 ## Problem
