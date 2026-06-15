@@ -6,7 +6,7 @@ status: Complete
 date: "2026-05"
 github: https://github.com/ConstantinVictorBeatErtel/RAID
 featured: true
-image: /images/raid-cover.jpg
+image: /images/raid-cover.png
 ---
 
 ## Problem
