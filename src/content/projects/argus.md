@@ -2,10 +2,8 @@
 title: "Project Argus: LEO Ground-Station Network Design"
 summary: Modeled Starlink ground-station placement as a fixed-charge facility-location MILP, generating cost-coverage Pareto frontiers across demand models and elevation thresholds.
 tags: [Python, MILP, Operations Research, PuLP, Skyfield, Optimization]
-status: Completed
+status: Complete
 date: "2026-05"
-github: ""
-demo: ""
 featured: true
 ---
 
