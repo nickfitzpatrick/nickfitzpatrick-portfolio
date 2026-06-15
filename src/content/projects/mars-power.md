@@ -6,6 +6,7 @@ status: Complete
 date: "2026-05"
 github: https://github.com/vineet-reddy/MarsColonyNuclearFusion
 featured: false
+image: /images/mars.png
 ---
 
 ## Problem
