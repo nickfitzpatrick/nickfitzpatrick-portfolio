@@ -5,7 +5,7 @@ tags: [Python, ML, Optimization, Streamlit, OR-Tools]
 status: In Progress
 date: "2025-12"
 github: https://github.com/nickfitzpatrick/routemorph
-featured: true
+featured: false
 ---
 
 ## Problem
