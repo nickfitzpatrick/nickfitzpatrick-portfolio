@@ -1,10 +1,11 @@
 ---
-title: "Understanding Customer Churn for BizGrow"
+title: "Google Hackathon: Understanding Customer Churn for 'BizGrow'"
 summary: Identified the root cause of a Q3 churn spike for a SaaS client by isolating a high-value customer cohort, tracing their support ticket language to a specific oversold feature, and quantifying $29M in at-risk contract value — delivered as an analytical consulting case in UC Berkeley's Google Hackathon.
 tags: [Python, Data Analysis, Product Analytics, Customer Analytics, SQL]
 status: Complete
 date: "2025-12"
 featured: true
+image: /images/Google-cover.png
 ---
 
 ## Problem
