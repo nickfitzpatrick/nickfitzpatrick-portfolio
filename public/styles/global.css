@@ -159,11 +159,14 @@ p { margin-bottom: 1rem; }
 .btn-primary:hover { opacity: 0.85; text-decoration: none; }
 .btn-secondary {
   display: inline-block;
+  background: transparent;
   border: 1px solid var(--border);
   color: var(--text);
   padding: 0.65rem 1.4rem;
   border-radius: 8px;
   font-size: 0.875rem;
+  font-family: inherit;
+  cursor: pointer;
   transition: border-color 0.2s;
 }
 .btn-secondary:hover { border-color: var(--accent); text-decoration: none; }
