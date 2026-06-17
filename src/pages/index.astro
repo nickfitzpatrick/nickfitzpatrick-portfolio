@@ -26,7 +26,85 @@ const projects = [...featured, ...rest].slice(0, 3);
       <!-- Contact strip -->
       <div class="fade-up-3" style="display:flex; gap:0.75rem; flex-wrap:wrap; align-items:center;">
         <a href="/projects" class="btn-primary">View Projects</a>
-        <a href="mailto:nickf5624@gmail.com" class="btn-secondary">Email me</a>
+        <div class="email-popover-wrap" style="position:relative; display:inline-block;">
+          <button class="btn-secondary" id="email-btn" aria-haspopup="true" aria-expanded="false">Email me</button>
+          <div id="email-popover" role="menu" style="
+            display:none;
+            position:absolute;
+            top:calc(100% + 8px);
+            left:0;
+            background:var(--surface);
+            border:1px solid var(--border);
+            border-radius:10px;
+            padding:0.5rem;
+            min-width:220px;
+            z-index:100;
+            box-shadow:0 8px 24px rgba(0,0,0,0.4);
+          ">
+            <button role="menuitem" id="copy-email-btn" style="
+              display:flex; align-items:center; gap:0.6rem;
+              width:100%; padding:0.55rem 0.75rem;
+              background:none; border:none; color:var(--text);
+              font-size:0.9rem; cursor:pointer; border-radius:6px;
+              text-align:left;
+            ">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <rect x="9" y="9" width="13" height="13" rx="2" ry="2"/>
+                <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/>
+              </svg>
+              <span id="copy-label">Copy email address</span>
+            </button>
+            <a role="menuitem" href="mailto:nicholasfitzpatrick@berkeley.edu" style="
+              display:flex; align-items:center; gap:0.6rem;
+              padding:0.55rem 0.75rem;
+              color:var(--text); text-decoration:none;
+              font-size:0.9rem; border-radius:6px;
+            ">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/>
+                <polyline points="22,6 12,13 2,6"/>
+              </svg>
+              Open in mail app
+            </a>
+          </div>
+        </div>
+
+        <script>
+          const emailBtn = document.getElementById('email-btn');
+          const popover = document.getElementById('email-popover');
+          const copyBtn = document.getElementById('copy-email-btn');
+          const copyLabel = document.getElementById('copy-label');
+          const EMAIL = 'nicholasfitzpatrick@berkeley.edu';
+
+          emailBtn.addEventListener('click', (e) => {
+            e.stopPropagation();
+            const open = popover.style.display === 'block';
+            popover.style.display = open ? 'none' : 'block';
+            emailBtn.setAttribute('aria-expanded', String(!open));
+          });
+
+          copyBtn.addEventListener('click', async () => {
+            try {
+              await navigator.clipboard.writeText(EMAIL);
+              copyLabel.textContent = 'Copied!';
+              setTimeout(() => { copyLabel.textContent = 'Copy email address'; }, 2000);
+            } catch {
+              copyLabel.textContent = 'Copy failed';
+            }
+          });
+
+          // Hover highlight for copy button
+          copyBtn.addEventListener('mouseenter', () => copyBtn.style.background = 'var(--border)');
+          copyBtn.addEventListener('mouseleave', () => copyBtn.style.background = 'none');
+          const mailLink = popover.querySelector('a[role="menuitem"]');
+          mailLink.addEventListener('mouseenter', () => mailLink.style.background = 'var(--border)');
+          mailLink.addEventListener('mouseleave', () => mailLink.style.background = 'none');
+
+          document.addEventListener('click', () => {
+            popover.style.display = 'none';
+            emailBtn.setAttribute('aria-expanded', 'false');
+          });
+        </script>
         <a href="https://www.linkedin.com/in/n-fitzpatrick" target="_blank" class="icon-btn" title="LinkedIn">
           <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor">
             <path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-2-2 2 2 0 0 0-2 2v7h-4v-7a6 6 0 0 1 6-6z"/>
