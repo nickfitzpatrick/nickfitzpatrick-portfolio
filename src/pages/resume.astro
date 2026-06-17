@@ -2,23 +2,248 @@
 import Base from '../layouts/Base.astro';
 ---
 <Base title="Resume">
-  <h1>Resume</h1>
-  <p class="muted" style="margin-bottom:2rem;">
-    <!-- TODO: add last updated date -->
-  </p>
 
-  <p>
-    <a href="/resume.pdf" target="_blank" style="background:var(--accent); color:#0f0f0f; padding:0.6rem 1.2rem; border-radius:6px; font-weight:600; font-size:0.9rem;">
+  <div style="display:flex; align-items:baseline; justify-content:space-between; flex-wrap:wrap; gap:1rem; margin-bottom:2.5rem;">
+    <h1 style="margin:0;">Resume</h1>
+    <a href="/resume.pdf" target="_blank" style="background:var(--accent); color:#0f0f0f; padding:0.6rem 1.2rem; border-radius:6px; font-weight:600; font-size:0.875rem; white-space:nowrap;">
       Download PDF
     </a>
-  </p>
+  </div>
 
-  <!-- Optional: embed PDF inline -->
-  <!--
-  <iframe
-    src="/resume.pdf"
-    style="width:100%; height:80vh; margin-top:2rem; border:1px solid var(--border); border-radius:8px;"
-    title="Resume"
-  />
-  -->
+  <div class="resume-body">
+
+    <!-- Header -->
+    <div class="r-header">
+      <h2>Nicholas Fitzpatrick</h2>
+      <p>
+        <a href="mailto:nicholasfitzpatrick@berkeley.edu">nicholasfitzpatrick@berkeley.edu</a>
+        <span class="r-sep">·</span> San Francisco Bay Area, CA
+        <span class="r-sep">·</span> <a href="https://www.linkedin.com/in/n-fitzpatrick" target="_blank">linkedin.com/in/n-fitzpatrick</a>
+      </p>
+      <p class="r-summary">
+        UC Berkeley IEOR master's graduate (May 2026) with hands-on experience building and deploying GenAI systems,
+        retrieval-augmented architectures, and LLM-based workflows. Focused on roles where AI drives measurable
+        operational and business outcomes.
+      </p>
+    </div>
+
+    <!-- Education -->
+    <section class="r-section">
+      <h3 class="r-section-title">Education</h3>
+
+      <div class="r-entry">
+        <div class="r-entry-header">
+          <span class="r-org">University of California, Berkeley – College of Engineering</span>
+          <span class="r-date">Aug 2025 – May 2026</span>
+        </div>
+        <div class="r-role">Master of Analytics – Industrial Engineering and Operations Research, Berkeley, CA</div>
+        <ul class="r-bullets">
+          <li>Coursework: Deep Learning (CNNs, Transformers, LLMs), Machine Learning, Supply Chain Analytics, Optimization, Simulation, Data Engineering, Database Systems</li>
+          <li>IEOR Department scholarship for exceptional merit and character</li>
+        </ul>
+      </div>
+
+      <div class="r-entry">
+        <div class="r-entry-header">
+          <span class="r-org">University of California, Berkeley – College of Environmental Design</span>
+          <span class="r-date">Jun 2018 – May 2020</span>
+        </div>
+        <div class="r-role">Bachelor of Arts in Sustainable Environmental Design – with Honors, Berkeley, CA</div>
+        <ul class="r-bullets">
+          <li>Focused on geospatial and energy data analysis as applied to architecture and urban planning</li>
+          <li>Lectured as a Student Instructor for UC Berkeley School of Public Health on energy, climate, and governance</li>
+        </ul>
+      </div>
+
+      <div class="r-entry">
+        <div class="r-entry-header">
+          <span class="r-org">Santa Rosa Junior College</span>
+          <span class="r-date">Aug 2023 – May 2025</span>
+        </div>
+        <div class="r-role">A.S. Computer Studies – Web Full-Stack Developer | A.A. Computer Studies – Web and Multimedia, Santa Rosa, CA</div>
+      </div>
+    </section>
+
+    <!-- Experience -->
+    <section class="r-section">
+      <h3 class="r-section-title">Professional Experience</h3>
+
+      <div class="r-entry">
+        <div class="r-entry-header">
+          <span class="r-org">Geopogo <span class="r-location">– Berkeley, CA</span></span>
+          <span class="r-date">Oct 2025 – Present</span>
+        </div>
+        <div class="r-role">AI Engineer & Product Lead <span style="font-weight:400; color:var(--muted);">(Internship)</span></div>
+        <ul class="r-bullets">
+          <li>Built and deployed an end-to-end pipeline converting architectural drawings into labeled training sets for a building code compliance model; onboarded external architecture firm partners for live compliance testing and production inference.</li>
+          <li>Integrated Google GenAI capabilities for image generation and generative design workflows via Python and JavaScript; developed frontend features and led UX/UI decisions across the platform.</li>
+          <li>Coordinated a cross-functional team of 10 across engineering and product to integrate the data pipeline and compliance model into the core platform; managed iterative delivery from user feedback through to shipped features.</li>
+          <li>Shipped redesigned landing page and consolidated site navigation, improving user onboarding experience for architecture and design firm clients.</li>
+        </ul>
+      </div>
+
+      <div class="r-entry">
+        <div class="r-entry-header">
+          <span class="r-org">Outlier <span class="r-location">– Remote</span></span>
+          <span class="r-date">Oct 2022 – May 2024</span>
+        </div>
+        <div class="r-role">AI Data Specialist <span style="font-weight:400; color:var(--muted);">(Contract)</span></div>
+        <ul class="r-bullets">
+          <li>Applied RLHF and hallucination-control evaluation to LLM outputs across agentic and multi-step reasoning tasks, improving accuracy and safety adherence in production-grade systems.</li>
+          <li>Conducted prompt engineering experiments and performed quality assurance on model responses and peer evaluations.</li>
+        </ul>
+      </div>
+
+      <div class="r-entry">
+        <div class="r-entry-header">
+          <span class="r-org">Cook's Vineyard Management <span class="r-location">– Sonoma, CA</span></span>
+          <span class="r-date">Sept 2020 – Oct 2022</span>
+        </div>
+        <div class="r-role">Operations Manager</div>
+        <ul class="r-bullets">
+          <li>Owned end-to-end operations across 475 acres and 15+ clients, managing dynamic resource allocation, real-time exception handling, and crew routing under seasonal SLAs.</li>
+          <li>Built a spreadsheet-based scheduling and monitoring system tracking crew assignments, equipment utilization, and job completion across concurrent sites; reduced idle time and rework via daily reallocation logic.</li>
+        </ul>
+      </div>
+    </section>
+
+    <!-- Projects -->
+    <section class="r-section">
+      <h3 class="r-section-title">Projects</h3>
+
+      <div class="r-entry">
+        <div class="r-entry-header">
+          <span class="r-org">RAID – Retrieval-Augmented Inverse Dynamics for Robotic Manipulation</span>
+          <span class="r-date">Spring 2026</span>
+        </div>
+        <div class="r-role" style="color:var(--muted); font-weight:400;">INDENG 242B – Deep Learning</div>
+        <ul class="r-bullets">
+          <li>Designed a retrieval-augmented architecture solving inverse dynamics for robotic manipulation: given a predicted future visual state, infer the motor command to reach it via cross-attention retrieval over a demonstration memory bank.</li>
+          <li>Achieved 6.5x reduction in action prediction error vs. direct neural network baseline on LIBERO-Spatial with only 25 demonstrations (val MSE 0.131 vs. 0.852).</li>
+          <li>Extended to RL fine-tuning in simulation, reaching 25% task success without retraining from scratch.</li>
+        </ul>
+      </div>
+
+      <div class="r-entry">
+        <div class="r-entry-header">
+          <span class="r-org">LEO Ground-Station Network Design</span>
+          <span class="r-date">Spring 2026</span>
+        </div>
+        <div class="r-role" style="color:var(--muted); font-weight:400;">INDENG 230 – Supply Chain Analytics</div>
+        <ul class="r-bullets">
+          <li>Modeled LEO satellite ground-station placement as a supply chain network design problem using MILP to trace cost-coverage Pareto frontiers across infrastructure constraints including backhaul availability and geopolitical feasibility.</li>
+          <li>Population-weighted coverage reached 43.3% vs. 20.8% uniform at identical geometry; geopolitical constraints reduced median distance to actual Starlink gateways from 7,154 km to 881 km.</li>
+        </ul>
+      </div>
+
+      <div class="r-entry">
+        <div class="r-entry-header">
+          <span class="r-org">Understanding Customer Churn for BizGrow</span>
+          <span class="r-date">Fall 2025</span>
+        </div>
+        <div class="r-role" style="color:var(--muted); font-weight:400;">Google Hackathon</div>
+        <ul class="r-bullets">
+          <li>Led team analyzing SaaS customer journey data with Python/Pandas; applied keyword clustering and segmentation to isolate a high-revenue cohort responsible for ~80% of churn revenue loss.</li>
+          <li>Validated findings with Causal ML models (Double ML, Uplift); delivered executive presentation addressing $29M in at-risk contracts.</li>
+        </ul>
+      </div>
+    </section>
+
+    <!-- Volunteerism -->
+    <section class="r-section">
+      <h3 class="r-section-title">Volunteerism</h3>
+      <div class="r-entry">
+        <div class="r-entry-header">
+          <span class="r-org">California Academy of Sciences <span class="r-location">– San Francisco, CA</span></span>
+          <span class="r-date">Dec 2022 – May 2023</span>
+        </div>
+        <div class="r-role">Scientific Computing Volunteer</div>
+        <ul class="r-bullets">
+          <li>Built a Flask/Python dashboard with Bash collection agents to monitor CPU/GPU usage, job queues, and storage across research clusters; informed equitable compute scheduling for the Director of Scientific Computing.</li>
+        </ul>
+      </div>
+    </section>
+
+    <!-- Skills -->
+    <section class="r-section">
+      <h3 class="r-section-title">Skills & Interests</h3>
+      <div class="r-skills">
+        <div class="r-skill-row"><span class="r-skill-label">Languages</span><span>Python, SQL, TypeScript, JavaScript, C++, HTML/CSS</span></div>
+        <div class="r-skill-row"><span class="r-skill-label">Libraries & Frameworks</span><span>Pandas, NumPy, Scikit-learn, PyTorch, LangChain, FAISS, Sentence-Transformers, Spark</span></div>
+        <div class="r-skill-row"><span class="r-skill-label">Platforms & Tools</span><span>Claude Code, Google Cloud SQL, Databricks, Firebase, MongoDB, Git, Dash/Plotly</span></div>
+        <div class="r-skill-row"><span class="r-skill-label">Methods</span><span>RAG, Embedding-Based Search, LLM Agents, LLM Fine-Tuning, MLOps, Model Deployment & Versioning, Prompt Engineering, Multi-step Reasoning, Hallucination Control, Vector Search, Statistical Modeling, ETL, REST APIs, A/B Testing</span></div>
+        <div class="r-skill-row"><span class="r-skill-label">Other</span><span>Instructing & Public Speaking, Cross-functional Team Leadership, GIS, UX/UI Design</span></div>
+        <div class="r-skill-row"><span class="r-skill-label">Interests</span><span>Scuba Diving, Motorcycling, Photography, Aquarium Design</span></div>
+      </div>
+    </section>
+
+  </div>
 </Base>
+
+<style>
+  .resume-body {
+    max-width: 860px;
+  }
+
+  /* Header */
+  .r-header { margin-bottom: 2rem; }
+  .r-header h2 { font-size: 1.6rem; margin: 0 0 0.35rem; }
+  .r-header p { color: var(--muted); font-size: 0.9rem; margin: 0 0 0.6rem; }
+  .r-header a { color: var(--accent); text-decoration: none; }
+  .r-header a:hover { text-decoration: underline; }
+  .r-summary { color: var(--text) !important; font-size: 0.925rem !important; line-height: 1.7; }
+  .r-sep { margin: 0 0.4rem; }
+
+  /* Sections */
+  .r-section { margin-bottom: 2rem; }
+  .r-section-title {
+    font-size: 0.7rem;
+    font-weight: 700;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--accent);
+    border-bottom: 1px solid var(--border);
+    padding-bottom: 0.4rem;
+    margin-bottom: 1.25rem;
+  }
+
+  /* Entries */
+  .r-entry { margin-bottom: 1.25rem; }
+  .r-entry:last-child { margin-bottom: 0; }
+  .r-entry-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    flex-wrap: wrap;
+    gap: 0.25rem;
+    margin-bottom: 0.2rem;
+  }
+  .r-org { font-weight: 600; font-size: 0.95rem; }
+  .r-location { font-weight: 400; color: var(--muted); }
+  .r-date { font-size: 0.825rem; color: var(--muted); white-space: nowrap; }
+  .r-role { font-size: 0.875rem; font-weight: 500; margin-bottom: 0.4rem; color: var(--text); }
+
+  /* Bullets */
+  .r-bullets {
+    margin: 0;
+    padding-left: 1.1rem;
+    list-style: disc;
+  }
+  .r-bullets li {
+    font-size: 0.875rem;
+    color: var(--muted);
+    line-height: 1.65;
+    margin-bottom: 0.2rem;
+  }
+
+  /* Skills table */
+  .r-skills { display: flex; flex-direction: column; gap: 0.5rem; }
+  .r-skill-row { display: flex; gap: 1rem; font-size: 0.875rem; line-height: 1.6; }
+  .r-skill-label {
+    min-width: 160px;
+    font-weight: 600;
+    color: var(--text);
+    flex-shrink: 0;
+  }
+  .r-skill-row span:last-child { color: var(--muted); }
+</style>
