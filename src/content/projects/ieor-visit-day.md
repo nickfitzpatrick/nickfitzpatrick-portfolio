@@ -5,6 +5,7 @@ tags: [Python, Streamlit, Operations Research, Optimization, Google Forms, Sched
 status: In Progress
 date: "2026-06"
 github: https://github.com/nickfitzpatrick/Summer2026_Project
+demo: https://ieor-visitdays-scheduling.streamlit.app/
 featured: true
 ---
 
