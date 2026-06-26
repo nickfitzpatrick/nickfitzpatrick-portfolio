@@ -7,6 +7,7 @@ date: "2026-06"
 github: https://github.com/nickfitzpatrick/Summer2026_Project
 demo: https://ieor-visitdays-scheduling.streamlit.app/
 featured: true
+image: /images/ieor-cover.png
 ---
 
 ## Problem
