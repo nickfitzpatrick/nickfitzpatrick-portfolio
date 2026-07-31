@@ -4,6 +4,7 @@ summary: Built a Random Forest classifier on five years of California drinking w
 tags: [Python, Machine Learning, Random Forest, Public Health, Data Analysis]
 status: Complete
 date: "2025-12"
+category: "Machine Learning"
 featured: false
 image: /images/water-cover.png
 ---

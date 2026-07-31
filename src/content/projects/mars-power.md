@@ -4,6 +4,7 @@ summary: Compared five power architectures across colony scales from 6 to 2,000 
 tags: [Python, Monte Carlo, Energy Systems, Data Analysis, Policy]
 status: Complete
 date: "2026-05"
+category: "Optimization & Analysis"
 github: https://github.com/vineet-reddy/MarsColonyNuclearFusion
 featured: false
 image: /images/mars.png

@@ -3,11 +3,21 @@ import { getCollection } from 'astro:content';
 import Base from '../../layouts/Base.astro';
 
 const allProjects = await getCollection('projects');
-const projects = allProjects.sort((a, b) => {
-  if (a.data.featured && !b.data.featured) return -1;
-  if (!a.data.featured && b.data.featured) return 1;
-  return (b.data.date ?? '').localeCompare(a.data.date ?? '');
-});
+
+const CATEGORIES = ['AI Engineering', 'Machine Learning', 'Optimization & Analysis'] as const;
+
+function forCategory(cat: string) {
+  return allProjects
+    .filter(p => p.data.category === cat)
+    .sort((a, b) => {
+      if (a.data.featured && !b.data.featured) return -1;
+      if (!a.data.featured && b.data.featured) return 1;
+      return (b.data.date ?? '').localeCompare(a.data.date ?? '');
+    });
+}
+
+const sections = CATEGORIES.map(cat => ({ name: cat, projects: forCategory(cat) }));
+const uncategorized = allProjects.filter(p => !p.data.category);
 ---
 <Base title="Projects">
   <p class="eyebrow">Work</p>
@@ -16,28 +26,98 @@ const projects = allProjects.sort((a, b) => {
     Selected work from grad school, internships, and independent projects.
   </p>
 
-  <div class="project-grid">
-    {projects.map((p, i) => (
-      <div class={`project-card fade-up-${Math.min(i + 1, 3)}`}>
-        <a href={`/projects/${p.slug}`} class="project-card-img">
-          {p.data.image
-            ? <img src={p.data.image} alt={p.data.title} style="width:100%;height:100%;object-fit:cover;" />
-            : <span>Project image</span>
-          }
-        </a>
-        <div class="project-card-body">
-          <h3><a href={`/projects/${p.slug}`}>{p.data.title}</a></h3>
-          <p>{p.data.summary}</p>
-          <div class="tag-row">
-            {p.data.tags.map((t: string) => <span class="tag">{t}</span>)}
-            {p.data.status && (
-              <span class={`tag ${p.data.status === 'In Progress' ? 'accent' : ''}`}>
-                {p.data.status}
-              </span>
-            )}
+  {sections.map((section, si) => (
+    <section style={si > 0 ? 'margin-top:3.5rem;' : ''}>
+      <div style="display:flex; justify-content:space-between; align-items:baseline; margin-bottom:1.25rem;">
+        <h2 style="font-size:1.1rem; font-weight:700; letter-spacing:-0.02em;">{section.name}</h2>
+        <span class="muted" style="font-size:0.8rem;">{section.projects.length} project{section.projects.length === 1 ? '' : 's'}</span>
+      </div>
+      <div class="project-grid">
+        {section.projects.map((p, i) => (
+          <div class={`project-card fade-up-${Math.min(i + 1, 3)}`}>
+            <a href={`/projects/${p.slug}`} class="project-card-img">
+              {p.data.image
+                ? <img src={p.data.image} alt={p.data.title} style="width:100%;height:100%;object-fit:cover;" />
+                : <span>Project image</span>
+              }
+            </a>
+            <div class="project-card-body">
+              <h3><a href={`/projects/${p.slug}`}>{p.data.title}</a></h3>
+              <p>{p.data.summary}</p>
+              <div class="tag-row">
+                {p.data.tags.map((t: string) => <span class="tag">{t}</span>)}
+                {p.data.status && (
+                  <span class={`tag ${p.data.status === 'In Progress' ? 'accent' : ''}`}>
+                    {p.data.status}
+                  </span>
+                )}
+              </div>
+            </div>
+          </div>
+        ))}
+
+        <!-- Placeholder slot for a future project in this category -->
+        <div class="project-card project-card-placeholder">
+          <div class="project-card-img placeholder-img">
+            <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" style="opacity:0.35;">
+              <line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/>
+            </svg>
+          </div>
+          <div class="project-card-body">
+            <h3 style="color:var(--muted);">Coming soon</h3>
+            <p>Weekend project in the pipeline &mdash; filling a resume gap in {section.name}.</p>
           </div>
         </div>
       </div>
-    ))}
-  </div>
+    </section>
+  ))}
+
+  {uncategorized.length > 0 && (
+    <section style="margin-top:3.5rem;">
+      <div style="display:flex; justify-content:space-between; align-items:baseline; margin-bottom:1.25rem;">
+        <h2 style="font-size:1.1rem; font-weight:700; letter-spacing:-0.02em;">Other</h2>
+        <span class="muted" style="font-size:0.8rem;">{uncategorized.length} project{uncategorized.length === 1 ? '' : 's'}</span>
+      </div>
+      <div class="project-grid">
+        {uncategorized.map((p, i) => (
+          <div class={`project-card fade-up-${Math.min(i + 1, 3)}`}>
+            <a href={`/projects/${p.slug}`} class="project-card-img">
+              {p.data.image
+                ? <img src={p.data.image} alt={p.data.title} style="width:100%;height:100%;object-fit:cover;" />
+                : <span>Project image</span>
+              }
+            </a>
+            <div class="project-card-body">
+              <h3><a href={`/projects/${p.slug}`}>{p.data.title}</a></h3>
+              <p>{p.data.summary}</p>
+              <div class="tag-row">
+                {p.data.tags.map((t: string) => <span class="tag">{t}</span>)}
+                {p.data.status && (
+                  <span class={`tag ${p.data.status === 'In Progress' ? 'accent' : ''}`}>
+                    {p.data.status}
+                  </span>
+                )}
+              </div>
+            </div>
+          </div>
+        ))}
+      </div>
+    </section>
+  )}
 </Base>
+
+<style>
+  .project-card-placeholder {
+    border-style: dashed;
+    opacity: 0.6;
+  }
+  .project-card-placeholder:hover {
+    opacity: 1;
+  }
+  .placeholder-img {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--muted);
+  }
+</style>

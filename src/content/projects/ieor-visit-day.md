@@ -4,6 +4,7 @@ summary: End-to-end scheduling tool for UC Berkeley IEOR's prospective graduate 
 tags: [Python, Streamlit, Operations Research, Optimization, Google Forms, Scheduling]
 status: In Progress
 date: "2026-06"
+category: "AI Engineering"
 github: https://github.com/nickfitzpatrick/Summer2026_Project
 demo: https://ieor-visitdays-scheduling.streamlit.app/
 featured: true

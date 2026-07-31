@@ -4,6 +4,7 @@ summary: Proposed and implemented a retrieval-augmented inverse dynamics head fo
 tags: [Python, PyTorch, Deep Learning, Robotics, Reinforcement Learning, Transformers]
 status: Complete
 date: "2026-05"
+category: "Machine Learning"
 github: https://github.com/ConstantinVictorBeatErtel/RAID
 featured: true
 image: /images/raid-cover.png
