@@ -4,7 +4,7 @@ summary: Identified the root cause of a Q3 churn spike for a SaaS client by isol
 tags: [Python, Data Analysis, Product Analytics, Customer Analytics, SQL]
 status: Complete
 date: "2025-12"
-category: "Optimization & Analysis"
+category: "Optimization, Analysis & Data Engineering"
 featured: true
 image: /images/Google-cover.png
 ---

@@ -4,7 +4,14 @@ import Base from '../../layouts/Base.astro';
 
 const allProjects = await getCollection('projects');
 
-const CATEGORIES = ['AI Engineering', 'Machine Learning', 'Optimization & Analysis'] as const;
+const CATEGORIES = ['AI Engineering', 'Machine Learning', 'Optimization, Analysis & Data Engineering'] as const;
+
+// How many "coming soon" placeholder cards to show at the end of each section.
+// AI Engineering has no projects yet, so it gets extra open slots.
+const PLACEHOLDER_COUNTS: Record<string, number> = {
+  'AI Engineering': 3,
+};
+const DEFAULT_PLACEHOLDER_COUNT = 1;
 
 function forCategory(cat: string) {
   return allProjects
@@ -16,7 +23,11 @@ function forCategory(cat: string) {
     });
 }
 
-const sections = CATEGORIES.map(cat => ({ name: cat, projects: forCategory(cat) }));
+const sections = CATEGORIES.map(cat => ({
+  name: cat,
+  projects: forCategory(cat),
+  placeholders: PLACEHOLDER_COUNTS[cat] ?? DEFAULT_PLACEHOLDER_COUNT,
+}));
 const uncategorized = allProjects.filter(p => !p.data.category);
 ---
 <Base title="Projects">
@@ -56,18 +67,20 @@ const uncategorized = allProjects.filter(p => !p.data.category);
           </div>
         ))}
 
-        <!-- Placeholder slot for a future project in this category -->
-        <div class="project-card project-card-placeholder">
-          <div class="project-card-img placeholder-img">
-            <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" style="opacity:0.35;">
-              <line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/>
-            </svg>
+        <!-- Placeholder slot(s) for future projects in this category -->
+        {Array.from({ length: section.placeholders }).map(() => (
+          <div class="project-card project-card-placeholder">
+            <div class="project-card-img placeholder-img">
+              <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" style="opacity:0.35;">
+                <line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/>
+              </svg>
+            </div>
+            <div class="project-card-body">
+              <h3 style="color:var(--muted);">Coming soon</h3>
+              <p>Weekend project in the pipeline &mdash; filling a resume gap in {section.name}.</p>
+            </div>
           </div>
-          <div class="project-card-body">
-            <h3 style="color:var(--muted);">Coming soon</h3>
-            <p>Weekend project in the pipeline &mdash; filling a resume gap in {section.name}.</p>
-          </div>
-        </div>
+        ))}
       </div>
     </section>
   ))}

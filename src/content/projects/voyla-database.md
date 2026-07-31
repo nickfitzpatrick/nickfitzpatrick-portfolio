@@ -4,7 +4,7 @@ summary: Designed and implemented a full database stack for an AI travel recomme
 tags: [Python, PostgreSQL, SQL, ETL, Data Engineering, Streamlit, Databricks, Spark]
 status: Complete
 date: "2025-12"
-category: "AI Engineering"
+category: "Optimization, Analysis & Data Engineering"
 github: https://github.com/sanchitram1/215-project-part-2
 featured: false
 image: /images/data-cover.png

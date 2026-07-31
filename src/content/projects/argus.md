@@ -4,7 +4,7 @@ summary: Modeled Starlink ground-station placement as a fixed-charge facility-lo
 tags: [Python, MILP, Operations Research, PuLP, Skyfield, Optimization]
 status: Complete
 date: "2026-05"
-category: "Optimization & Analysis"
+category: "Optimization, Analysis & Data Engineering"
 featured: true
 image: /images/argus-cover.png
 ---
