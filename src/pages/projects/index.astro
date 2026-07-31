@@ -7,11 +7,12 @@ const allProjects = await getCollection('projects');
 const CATEGORIES = ['AI Engineering', 'Machine Learning', 'Optimization, Analysis & Data Engineering'] as const;
 
 // How many "coming soon" placeholder cards to show at the end of each section.
-// AI Engineering has no projects yet, so it gets extra open slots.
+// AI Engineering has no projects yet, so it gets extra open slots. Other sections
+// are already full of real work, so no placeholders there.
 const PLACEHOLDER_COUNTS: Record<string, number> = {
-  'AI Engineering': 3,
+  'AI Engineering': 6,
 };
-const DEFAULT_PLACEHOLDER_COUNT = 1;
+const DEFAULT_PLACEHOLDER_COUNT = 0;
 
 function forCategory(cat: string) {
   return allProjects
@@ -40,7 +41,7 @@ const uncategorized = allProjects.filter(p => !p.data.category);
   {sections.map((section, si) => (
     <section style={si > 0 ? 'margin-top:3.5rem;' : ''}>
       <div style="display:flex; justify-content:space-between; align-items:baseline; margin-bottom:1.25rem;">
-        <h2 style="font-size:1.1rem; font-weight:700; letter-spacing:-0.02em;">{section.name}</h2>
+        <h2 style="font-size:1.75rem; font-weight:700; letter-spacing:-0.02em;">{section.name}</h2>
         <span class="muted" style="font-size:0.8rem;">{section.projects.length} project{section.projects.length === 1 ? '' : 's'}</span>
       </div>
       <div class="project-grid">
@@ -88,7 +89,7 @@ const uncategorized = allProjects.filter(p => !p.data.category);
   {uncategorized.length > 0 && (
     <section style="margin-top:3.5rem;">
       <div style="display:flex; justify-content:space-between; align-items:baseline; margin-bottom:1.25rem;">
-        <h2 style="font-size:1.1rem; font-weight:700; letter-spacing:-0.02em;">Other</h2>
+        <h2 style="font-size:1.75rem; font-weight:700; letter-spacing:-0.02em;">Other</h2>
         <span class="muted" style="font-size:0.8rem;">{uncategorized.length} project{uncategorized.length === 1 ? '' : 's'}</span>
       </div>
       <div class="project-grid">
