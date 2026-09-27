@@ -7,11 +7,8 @@ const allProjects = await getCollection('projects');
 const CATEGORIES = ['AI Engineering', 'Machine Learning', 'Optimization, Analysis & Data Engineering'] as const;
 
 // How many "coming soon" placeholder cards to show at the end of each section.
-// AI Engineering has no projects yet, so it gets extra open slots. Other sections
-// are already full of real work, so no placeholders there.
-const PLACEHOLDER_COUNTS: Record<string, number> = {
-  'AI Engineering': 6,
-};
+// Set a category to a number > 0 to show open slots; 0 hides them.
+const PLACEHOLDER_COUNTS: Record<string, number> = {};
 const DEFAULT_PLACEHOLDER_COUNT = 0;
 
 function forCategory(cat: string) {
@@ -28,7 +25,7 @@ const sections = CATEGORIES.map(cat => ({
   name: cat,
   projects: forCategory(cat),
   placeholders: PLACEHOLDER_COUNTS[cat] ?? DEFAULT_PLACEHOLDER_COUNT,
-}));
+})).filter(s => s.projects.length + s.placeholders > 0); // never render an empty section
 const uncategorized = allProjects.filter(p => !p.data.category);
 ---
 <Base title="Projects">
