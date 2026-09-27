@@ -12,7 +12,8 @@ const projects = defineCollection({
     github: z.string().url().optional(),
     demo: z.string().url().optional(),
     featured: z.boolean().default(false),  // pin to top of projects page
-    image: z.string().optional(),          // path relative to /public, e.g. "/images/raid-cover.jpg"
+    image: z.string().optional(),
+    award: z.string().optional(),          // e.g. "3rd Place, XYZ Hackathon" - shown as a highlight          // path relative to /public, e.g. "/images/raid-cover.jpg"
   }),
 });
 

@@ -264,3 +264,19 @@ p { margin-bottom: 1rem; }
   h1 { font-size: 2rem; }
   nav ul { gap: 1.25rem; }
 }
+
+/* ── Award highlight ── */
+.award-callout {
+  display: inline-flex; align-items: center; gap: 0.6rem;
+  margin: 0.25rem 0 1.25rem;
+  padding: 0.7rem 1.1rem;
+  border: 1px solid var(--accent);
+  border-radius: 10px;
+  background: rgba(123, 140, 222, 0.12);
+  color: #fff; font-weight: 700; font-size: 1.05rem; line-height: 1.4;
+}
+.award-callout svg { color: var(--accent); flex-shrink: 0; }
+.award-line {
+  color: var(--accent) !important; font-weight: 600; font-size: 0.8rem !important;
+  margin: 0.15rem 0 0.4rem !important;
+}

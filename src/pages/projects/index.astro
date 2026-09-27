@@ -52,6 +52,7 @@ const uncategorized = allProjects.filter(p => !p.data.category);
             </a>
             <div class="project-card-body">
               <h3><a href={`/projects/${p.slug}`}>{p.data.title}</a></h3>
+              {p.data.award && <p class="award-line">{p.data.award}</p>}
               <p>{p.data.summary}</p>
               <div class="tag-row">
                 {p.data.tags.map((t: string) => <span class="tag">{t}</span>)}

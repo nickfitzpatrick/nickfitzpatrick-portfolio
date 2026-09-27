@@ -12,7 +12,7 @@ export async function getStaticPaths() {
 
 const { project } = Astro.props;
 const { Content } = await project.render();
-const { title, summary, tags, status, date, github, demo, image } = project.data;
+const { title, summary, tags, status, date, github, demo, image, award } = project.data;
 ---
 <ProjectLayout
   title={title}
@@ -23,6 +23,7 @@ const { title, summary, tags, status, date, github, demo, image } = project.data
   github={github}
   demo={demo}
   image={image}
+  award={award}
 >
   <Content />
 </ProjectLayout>

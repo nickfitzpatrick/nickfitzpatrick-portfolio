@@ -138,6 +138,7 @@ const projects = [...featured, ...rest].slice(0, 3);
           </div>
           <div class="project-card-body">
             <h3><a href={`/projects/${p.slug}`}>{p.data.title}</a></h3>
+            {p.data.award && <p class="award-line">{p.data.award}</p>}
             <p>{p.data.summary}</p>
             <div class="tag-row">
               {p.data.tags.slice(0, 3).map((t: string) => <span class="tag">{t}</span>)}

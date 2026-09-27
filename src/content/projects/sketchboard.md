@@ -1,11 +1,12 @@
 ---
 title: "Sketchboard: Sketch-to-Mockup iPad App"
-summary: A SwiftUI/PencilKit iPad app, co-built in six hours, that turns hand-drawn sketches plus voice dictation into rendered HTML mockups using a multi-step Gemma 4 generation loop. 3rd place of 20+ teams at the Google DeepMind x Gradient x tokens& Open Models Hackathon.
+summary: A SwiftUI/PencilKit iPad app, co-built in six hours, that turns hand-drawn sketches plus voice dictation into rendered HTML mockups using a multi-step Gemma 4 generation loop.
 tags: [Gemma 4, SwiftUI, PencilKit, Multimodal, Hackathon]
 status: Complete
 date: "2026-09"
 category: "AI Engineering"
 image: /images/sketchboard-cover.svg
+award: "3rd Place of 20+ teams | Google DeepMind x Gradient x tokens& Open Models Hackathon"
 ---
 
 ## Overview
