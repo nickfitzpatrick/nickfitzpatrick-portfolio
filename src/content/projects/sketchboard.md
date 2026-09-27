@@ -1,21 +1,26 @@
 ---
-title: "Sketchboard"
-summary: An iPad app that turns hand-drawn sketches into functional mockups, using Google DeepMind's Gemma models to interpret the sketch. Won 3rd place of 20+ teams at the Google DeepMind x tokens& x Gradient Open Model Hackathon.
-tags: [Gemma, Google DeepMind, iPad, Product Design, Hackathon]
+title: "Sketchboard: Sketch-to-Mockup iPad App"
+summary: A SwiftUI/PencilKit iPad app, co-built in six hours, that turns hand-drawn sketches plus voice dictation into rendered HTML mockups using a multi-step Gemma 4 generation loop. 3rd place of 20+ teams at the Google DeepMind x Gradient x tokens& Open Models Hackathon.
+tags: [Gemma 4, SwiftUI, PencilKit, Multimodal, Hackathon]
 status: Complete
+date: "2026-09"
 category: "AI Engineering"
 image: /images/sketchboard-cover.svg
 ---
 
 ## Overview
 
-Sketchboard is an iPad app that turns hand-drawn sketches into functional mockups. It uses Google DeepMind's Gemma open models to interpret what the user has drawn.
+Sketchboard is an iPad app that turns multimodal input (hand-drawn sketches plus voice dictation) into rendered HTML mockups, with conversational refinement. A five-person team co-built it in six hours at the Google DeepMind x Gradient x tokens& Open Models Hackathon, where it placed **3rd out of 20+ teams**.
 
-Built by a five-person team at the Google DeepMind x tokens& x Gradient Open Model Hackathon, where it placed **3rd out of 20+ teams**.
+## What I Built
 
-## My Role
+**Generation loop.** A multi-step Gemma 4 26B loop that streamed drafts, ran automated validation checks, critiqued and revised, and returned an approved or best-of-N output. Gemma 4 26B was chosen for near-flagship quality at small-model speed, plus native vision.
 
-A mix of design work and Gemma model implementation.
+**Design and integration.** Designed the app interface and design system; integrated the Lambda GPU inference backend and Nango GitHub OAuth.
+
+## Stack
+
+SwiftUI, PencilKit, Gemma 4 26B, Lambda GPU inference, Nango.
 
 ## Team
 
