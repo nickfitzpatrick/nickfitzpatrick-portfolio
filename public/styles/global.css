@@ -280,3 +280,9 @@ p { margin-bottom: 1rem; }
   color: var(--accent) !important; font-weight: 600; font-size: 0.8rem !important;
   margin: 0.15rem 0 0.4rem !important;
 }
+
+/* ── Global scale: render everything 20% smaller on desktop ── */
+@media (min-width: 900px) {
+  html { zoom: 0.8; }
+  body { min-height: 125vh; } /* offset zoom so footer stays at the bottom */
+}
