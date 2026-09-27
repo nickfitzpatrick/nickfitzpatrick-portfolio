@@ -7,7 +7,7 @@ const projects = defineCollection({
     summary: z.string(),
     tags: z.array(z.string()),
     status: z.enum(['Complete', 'In Progress', 'Archived']).optional(),
-    category: z.enum(['AI Engineering', 'Machine Learning', 'Optimization, Analysis & Data Engineering']).optional(),
+    category: z.enum(['AI & Machine Learning', 'Optimization, Analysis & Data Engineering']).optional(),
     date: z.string().optional(),           // e.g. "2025-05"
     github: z.string().url().optional(),
     demo: z.string().url().optional(),

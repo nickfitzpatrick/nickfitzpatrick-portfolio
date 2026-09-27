@@ -13,7 +13,7 @@
   --accent-glow: rgba(123,140,222,0.22);
   --font-sans: 'Inter', system-ui, sans-serif;
   --font-mono: 'JetBrains Mono', 'Fira Code', monospace;
-  --max-w: 1280px;
+  --max-w: 1120px;
   --pad: clamp(1.5rem, 5vw, 4rem);
 }
 
@@ -46,7 +46,7 @@
 .theme-toggle:hover { border-color: var(--accent); color: var(--text); }
 
 /* ── Base ── */
-html { font-size: 16px; scroll-behavior: smooth; }
+html { font-size: 14px; scroll-behavior: smooth; }
 body {
   background: var(--bg);
   color: var(--text);
@@ -84,7 +84,7 @@ main {
   width: 100%;
   max-width: var(--max-w);
   margin: 0 auto;
-  padding: 4rem var(--pad);
+  padding: 3rem var(--pad);
   flex: 1;
 }
 
@@ -107,7 +107,7 @@ footer {
 .footer-links a:hover { color: var(--accent); text-decoration: none; }
 
 /* ── Typography ── */
-h1 { font-size: 3.25rem; font-weight: 800; letter-spacing: -0.04em; line-height: 1.05; margin-bottom: 1rem; }
+h1 { font-size: 2.75rem; font-weight: 800; letter-spacing: -0.04em; line-height: 1.05; margin-bottom: 1rem; }
 h2 { font-size: 1.4rem; font-weight: 600; letter-spacing: -0.02em; margin-bottom: 0.75rem; }
 h3 { font-size: 1.1rem; font-weight: 600; margin-bottom: 0.5rem; }
 p { margin-bottom: 1rem; }

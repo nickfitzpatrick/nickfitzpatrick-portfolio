@@ -4,7 +4,7 @@ summary: Combined severity-weighted p-median facility location with a LightGBM s
 tags: [Python, LightGBM, Operations Research, OSMnx, Geospatial, Optimization]
 status: Complete
 date: "2026-05"
-category: "Machine Learning"
+category: "AI & Machine Learning"
 demo: https://erc-dashboard.onrender.com/
 featured: true
 image: /images/ER-cover.png
