@@ -9,6 +9,7 @@ const GRASS = {
   brightness: 1.5, // blade lightness multiplier
   swaySpeed: 0.5, // current speed
   partStiffness: 0.0025, partDamping: 0.93, // pointer parting: lower stiffness = slower
+  returnStiffness: 0.01, returnDamping: 0.85, // springing back once the pointer or finger has gone (about 0.75s, no wobble)
   glowChance: 0.08, // share of mid/front blades with glowing tips
 };
 const TIPS = ['31,195,195', '216,177,58']; // --wi-teal, --wi-gold
@@ -55,7 +56,7 @@ export function initSeagrass(canvas) {
         if (d < 110) target += Math.sign(dx || 1) * (1 - d / 110) * h * 0.9;
       }
       if (still) bl.b = target;
-      else { bl.v += (target - bl.b) * GRASS.partStiffness; bl.v *= GRASS.partDamping; bl.b += bl.v; }
+      else { bl.v += (target - bl.b) * (pointer ? GRASS.partStiffness : GRASS.returnStiffness); bl.v *= pointer ? GRASS.partDamping : GRASS.returnDamping; bl.b += bl.v; }
       const bx = bl.x, w = bl.w, wave = Math.sin(t * 0.6 + bl.ph * 2 + bl.x * 0.015) * h * 0.035;
       const c1x = bx + bl.b * 0.08, c1y = H - h * 0.38, c2x = bx + bl.b * 0.6 + wave, c2y = H - h * 0.78;
       const tx = bx + bl.b + wave * 1.4, ty = H - h + Math.abs(bl.b) * 0.2;
@@ -92,9 +93,19 @@ export function initSeagrass(canvas) {
   function start() { if (!raf && onScreen && !document.hidden) raf = requestAnimationFrame(frame); }
   function stop() { cancelAnimationFrame(raf); raf = 0; }
 
-  host.addEventListener('pointermove', (e) => { const r = canvas.getBoundingClientRect(); pointer = { x: e.clientX - r.left, y: e.clientY - r.top }; }, { passive: true });
-  host.addEventListener('pointerleave', () => { pointer = null; });
-  host.addEventListener('pointerup', (e) => { if (e.pointerType === 'touch') pointer = null; });
+  // A finger usually hands over to page scrolling (pointercancel) and may never send pointerup or
+  // pointerleave, which left the blades parted around a stale point. Touch now holds the parting
+  // briefly after its last move, then lets go so the blades spring back.
+  let letGo = 0;
+  const release = () => { pointer = null; clearTimeout(letGo); };
+  const releaseSoon = () => { clearTimeout(letGo); letGo = setTimeout(release, 900); };
+  host.addEventListener('pointermove', (e) => {
+    const r = canvas.getBoundingClientRect(); pointer = { x: e.clientX - r.left, y: e.clientY - r.top };
+    if (e.pointerType === 'touch') releaseSoon();
+  }, { passive: true });
+  host.addEventListener('pointerleave', (e) => { if (e.pointerType !== 'touch') release(); });
+  host.addEventListener('pointercancel', releaseSoon);
+  host.addEventListener('pointerup', (e) => { if (e.pointerType === 'touch') releaseSoon(); });
   new ResizeObserver(() => { build(); if (still) frame(performance.now()); }).observe(canvas);
   new IntersectionObserver(([en]) => { onScreen = en.isIntersecting; if (onScreen && !still) start(); else stop(); }).observe(host);
   document.addEventListener('visibilitychange', () => (document.hidden ? stop() : !still && start()));
