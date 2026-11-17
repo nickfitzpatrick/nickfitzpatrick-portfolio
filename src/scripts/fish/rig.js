@@ -7,7 +7,8 @@
 //   - tail lobes and fins that trail and flutter behind that wave
 //   - fins that flare open when idle and fold back as the fish speeds up
 //   - pectoral fins that scull while hovering
-//   - a body bend into turns
+//   - a curl through the whole body when it turns round: the head leads, the spine bends
+//     into a C behind it, and the tail and fins sweep round last
 // Everything scales with `effort` (0 = hovering, 1 = swimming hard).
 import { MathUtils, Quaternion, Vector3 } from 'three';
 
@@ -16,6 +17,9 @@ const FORWARD = new Vector3(0, 0, 1);
 const SIDE = new Vector3(1, 0, 0);
 const TAU = Math.PI * 2;
 const WAVE_STEP = 0.8;                 // phase lag between neighbouring spine joints (rad)
+const CURL_SHARE = [0.07, 0.15, 0.24, 0.28, 0.26]; // how a turn's curl is spread along the spine, head to tail (sums to 1)
+const CURL_TAIL = 0.3;                 // extra the tail fan trails beyond the spine, as a share of the curl
+const CURL_TUCK = 0.2;                 // how much the fins fold in while curled
 
 const name = (id) => `Bone${id}_Armature`;
 
@@ -77,8 +81,9 @@ export function createRig(model, mixer) {
 
   return {
     /** Advances the clip and the procedural layer. Returns the head-recoil yaw (rad) for the caller to apply to the whole fish.
-     *  @param {number} dt seconds  @param {{effort:number, yawRate:number}} state */
-    update(dt, { effort = 0, yawRate = 0 } = {}) {
+     *  `curl` is how far (rad) the tail end is turned relative to the head; the caller eases it.
+     *  @param {number} dt seconds  @param {{effort:number, curl:number}} state */
+    update(dt, { effort = 0, curl = 0 } = {}) {
       // The mixer skips writing values that did not change, so start every frame from what it
       // last wrote, let it update, remember that, and only then add the procedural layer.
       for (const j of driven.values()) j.bone.quaternion.copy(j.mixed);
@@ -90,11 +95,11 @@ export function createRig(model, mixer) {
       slow += dt;
       const amp = MathUtils.lerp(0.06, 0.19, effort);          // joint swing at the tail base (rad)
       const flutter = MathUtils.lerp(0.06, 0.11, effort);     // in-plane ripple of fins and tail lobes (rad)
-      const bend = MathUtils.clamp(-yawRate * 0.085, -0.24, 0.24); // tail trails behind a turn
-      const fold = MathUtils.lerp(-0.07, 0.17, effort);        // fins flare when idle, streamline at speed
+      const trail = curl * CURL_TAIL;                           // tail fan and fins sweep round after the body
+      const fold = MathUtils.lerp(-0.07, 0.17, effort) + Math.min(0.24, Math.abs(curl) * CURL_TUCK); // fins flare when idle, streamline at speed and in a turn
 
       spine.forEach((s, i) => {
-        const a = amp * s.share * Math.sin(phase - i * WAVE_STEP) + bend * s.share;
+        const a = amp * s.share * Math.sin(phase - i * WAVE_STEP) + curl * (CURL_SHARE[i] ?? 0);
         for (const j of s.joints) turn(j, j.up, a);
       });
       const n = spine.length;
@@ -102,10 +107,10 @@ export function createRig(model, mixer) {
         const [base, tip] = lobe.joints;
         const breathe = 0.08 * Math.sin(slow * 0.7 + lobe.lag * 4);
         const ripple = flutter * Math.sin(phase - n * WAVE_STEP - lobe.lag * 2.4);
-        turn(base, base.up, amp * 1.25 * Math.sin(phase - n * WAVE_STEP - lobe.lag) + bend);
+        turn(base, base.up, amp * 1.25 * Math.sin(phase - n * WAVE_STEP - lobe.lag) + trail * (1 + lobe.lag * 0.4));
         turn(base, base.side, lobe.fold * (fold + breathe) + ripple);
         if (tip) {
-          turn(tip, tip.up, amp * 1.6 * Math.sin(phase - (n + 1) * WAVE_STEP - lobe.lag * 1.4) + bend * 0.8);
+          turn(tip, tip.up, amp * 1.6 * Math.sin(phase - (n + 1) * WAVE_STEP - lobe.lag * 1.4) + trail);
           turn(tip, tip.side, flutter * 1.3 * Math.sin(phase - (n + 1.4) * WAVE_STEP - lobe.lag * 2.4)); // tips trail the base
         }
       }
@@ -113,10 +118,10 @@ export function createRig(model, mixer) {
         const [base, tip] = fin.joints;
         const breathe = 0.09 * Math.sin(slow * 0.55 + fin.at * 2.1);
         const ripple = flutter * Math.sin(phase - fin.at * WAVE_STEP - 1.2);
-        turn(base, base.forward, amp * 1.3 * Math.sin(phase - fin.at * WAVE_STEP - 0.9) - bend * 0.5); // leans away from the wave
+        turn(base, base.forward, amp * 1.3 * Math.sin(phase - fin.at * WAVE_STEP - 0.9) - trail * 0.8); // leans away from the wave and the turn
         turn(base, base.side, fin.fold * (fold * 0.8 + breathe) + ripple);
         if (tip) {
-          turn(tip, tip.forward, amp * 1.6 * Math.sin(phase - fin.at * WAVE_STEP - 1.7));
+          turn(tip, tip.forward, amp * 1.6 * Math.sin(phase - fin.at * WAVE_STEP - 1.7) - trail * 0.6);
           turn(tip, tip.side, flutter * 1.2 * Math.sin(phase - fin.at * WAVE_STEP - 2.1));
         }
       }

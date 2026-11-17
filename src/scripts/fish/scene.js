@@ -24,6 +24,11 @@ const FOV = 22;
 const ALPHA_CUTOFF = 0.4;            // fin texels more transparent than this are not drawn
 const EDGE_TOP = 48, EDGE_BOTTOM = 72; // px kept clear for the nav bars
 const YAW_SPRING = 15, YAW_DAMPING = 6.6; // side-flip spring (critical damping would be 7.7)
+// Turning round. The head follows the spring above; the rest of the body follows the head on a
+// softer, bouncier spring, so it curls into a C behind the head and then whips through.
+const BODY_SPRING = 9, BODY_DAMPING = 3.6;
+const MAX_CURL = 1.5;   // rad the tail end may lag the head (about 85 degrees)
+const TURN_POINT = 0.14; // the fish turns about its shoulders, this far ahead of its middle (share of the canvas)
 // Overall tempo. 1 is the original speed; lower is calmer. PACE slows travel, turning and
 // wandering together; BODY_PACE slows the tail beat and fin motion.
 const PACE = 0.55;
@@ -127,7 +132,9 @@ export async function createFish({ canvas, spots, avoid = [], url, reduced, fine
   }
 
   /* ---------- Swimming ---------- */
-  const fish = { x: 0, y: 0, heading: Math.PI, speed: 0, turn: 0, side: -1, yaw: -THREE_QUARTER, yawVel: 0, pitch: 0, roll: 0, scale: 1, effort: 0 };
+  const fish = { x: 0, y: 0, heading: Math.PI, speed: 0, turn: 0, side: -1, yaw: -THREE_QUARTER, yawVel: 0, bodyYaw: -THREE_QUARTER, bodyVel: 0, pitch: 0, roll: 0, scale: 1, effort: 0 };
+  // fish.x / fish.y is the point it turns about (its shoulders); its middle sits behind that, on whichever side it faces away from
+  const lead = () => -size * fish.scale * TURN_POINT * Math.sin(fish.yaw);
   const pointer = { x: 0, y: 0, until: 0 };
   let lastScroll = scrollY, clock = 0;
 
@@ -143,7 +150,7 @@ export async function createFish({ canvas, spots, avoid = [], url, reduced, fine
     const s = size * scale, m = s * 0.5;
     return {
       scale,
-      x: MathUtils.clamp(rect.left + Math.sin(t * 0.17) * s * 0.28, m, Math.max(m, W - m)),   // slow figure of eight
+      x: MathUtils.clamp(rect.left + Math.sin(t * 0.17) * s * 0.28, m + s * TURN_POINT, Math.max(m, W - m - s * TURN_POINT)),   // slow figure of eight
       y: MathUtils.clamp(rect.top + Math.sin(t * 0.31 + 1) * s * 0.12, m + EDGE_TOP, Math.max(m + EDGE_TOP, H - m - EDGE_BOTTOM)),
     };
   }
@@ -177,20 +184,21 @@ export async function createFish({ canvas, spots, avoid = [], url, reduced, fine
   }
   function keepFishClear(list) {
     for (const zone of list) {
-      if (!inside(zone, fish.x, fish.y)) continue;
+      const x = fish.x + lead(); // zones are tested against the middle of the fish, not its turning point
+      if (!inside(zone, x, fish.y)) continue;
       const exits = [
         [fish.y - zone.top, () => { fish.y = zone.top; }],
         [zone.bottom - fish.y, () => { fish.y = zone.bottom; }],
-        [fish.x - zone.left, () => { fish.x = zone.left; }],
-        [zone.right - fish.x, () => { fish.x = zone.right; }],
+        [x - zone.left, () => { fish.x = zone.left - lead(); }],
+        [zone.right - x, () => { fish.x = zone.right - lead(); }],
       ];
       exits.sort((a, b) => a[0] - b[0])[0][1](); // out by the nearest edge
     }
   }
   const blockedBy = (list, goal) => list.find((zone) =>
-    ((fish.x > zone.left && fish.x < zone.right) || (goal.x > zone.left && goal.x < zone.right)) &&
+    ((fish.x + lead() > zone.left && fish.x + lead() < zone.right) || (goal.x > zone.left && goal.x < zone.right)) &&
     ((fish.y <= zone.top && goal.y >= zone.bottom) || (fish.y >= zone.bottom && goal.y <= zone.top)));
-  const offScreen = () => { const h = size * fish.scale * 0.5; return fish.x < -h || fish.x > W + h || fish.y < -h || fish.y > H + h; };
+  const offScreen = () => { const h = size * fish.scale * 0.5, x = fish.x + lead(); return x < -h || x > W + h || fish.y < -h || fish.y > H + h; };
 
   const first = target(0);
   fish.scale = first.scale;
@@ -217,7 +225,7 @@ export async function createFish({ canvas, spots, avoid = [], url, reduced, fine
       const fromRight = goal.x > W / 2, h = size * fish.scale * 0.5 + 4;
       fish.x = fromRight ? W + h : -h; fish.y = goal.y;
       fish.heading = fromRight ? Math.PI : 0; fish.turn = 0; fish.speed = size * 0.2;
-      fish.side = fromRight ? -1 : 1; fish.yaw = fish.side * THREE_QUARTER; fish.yawVel = 0;
+      fish.side = fromRight ? -1 : 1; fish.yaw = fish.bodyYaw = fish.side * THREE_QUARTER; fish.yawVel = fish.bodyVel = 0;
     } else if (detour) {         // a card is in the way: leave by the nearer side of the screen, staying level
       tx = fish.x > W / 2 ? W + size : -size; ty = fish.y;
     } else if (now < pointer.until) {
@@ -243,7 +251,7 @@ export async function createFish({ canvas, spots, avoid = [], url, reduced, fine
     fish.y += Math.sin(fish.heading) * fish.speed * dt;
     keepFishClear(clear);
     // How hard it is working: mostly speed, plus a kick while accelerating or turning.
-    const work = fish.speed / (size * 1.1) + Math.max(0, gain) / (size * 2.5) + Math.abs(fish.turn) * 0.06;
+    const work = fish.speed / (size * 1.1) + Math.max(0, gain) / (size * 2.5) + Math.abs(fish.turn) * 0.06 + Math.abs(fish.yawVel) * 0.1; // turning round takes a few quick beats
     fish.effort = damp(fish.effort, MathUtils.clamp(work, 0, 1), 3, dt);
 
     // Pose: side-on to the viewer, facing the way it travels. It flips sides by turning through the camera.
@@ -255,12 +263,15 @@ export async function createFish({ canvas, spots, avoid = [], url, reduced, fine
     // A slightly under-damped spring: the turn eases in, eases out and settles with a hint of follow-through.
     fish.yawVel += (YAW_SPRING * (fish.side * THREE_QUARTER - fish.yaw) - YAW_DAMPING * fish.yawVel) * dt;
     fish.yaw += fish.yawVel * dt;
+    fish.bodyVel += (BODY_SPRING * (fish.yaw - fish.bodyYaw) - BODY_DAMPING * fish.bodyVel) * dt;
+    fish.bodyYaw += fish.bodyVel * dt;
+    const curl = MathUtils.clamp(fish.bodyYaw - fish.yaw, -MAX_CURL, MAX_CURL); // how far the tail end trails the head
     fish.pitch = damp(fish.pitch, MathUtils.clamp(hy * 0.6, -0.42, 0.42) * moving, 3, dt);
     const bank = MathUtils.clamp(-fish.turn * 0.16, -0.3, 0.3) * fish.side + MathUtils.clamp(fish.yawVel * 0.07, -0.2, 0.2); // banks into curves and flips
     fish.roll = damp(fish.roll, bank, 3.5, dt);
 
     mixer.timeScale = 0.6 + fish.effort * 1.6; // the clip's own fin drift also follows effort
-    const recoil = rig.update(frameDt * BODY_PACE, { effort: fish.effort, yawRate: fish.yawVel * PACE });
+    const recoil = rig.update(frameDt * BODY_PACE, { effort: fish.effort, curl });
     pivot.rotation.set(fish.pitch, fish.yaw + recoil, fish.roll);
   }
 
@@ -271,9 +282,10 @@ export async function createFish({ canvas, spots, avoid = [], url, reduced, fine
     const dt = MathUtils.clamp((now - last) / 1000, 0.001, 0.05); last = now;
     step(dt, now);
     const bob = Math.sin(clock * 1.2) * size * 0.012;
-    canvas.style.transform = `translate3d(${(fish.x - size / 2).toFixed(1)}px, ${(fish.y + bob - size / 2).toFixed(1)}px, 0) scale(${fish.scale.toFixed(3)})`;
+    const middle = fish.x + lead();
+    canvas.style.transform = `translate3d(${(middle - size / 2).toFixed(1)}px, ${(fish.y + bob - size / 2).toFixed(1)}px, 0) scale(${fish.scale.toFixed(3)})`;
     const h = size * fish.scale * 0.5;
-    if (fish.x < -h || fish.x > W + h || fish.y < -h || fish.y > H + h) return; // off screen: nothing to draw
+    if (middle < -h || middle > W + h || fish.y < -h || fish.y > H + h) return; // off screen: nothing to draw
     renderer.render(scene, camera);
   }
   const play = () => { if (!raf && !document.hidden) { last = performance.now(); raf = requestAnimationFrame(frame); } };
