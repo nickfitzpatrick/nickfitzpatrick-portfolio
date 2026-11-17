@@ -1,9 +1,9 @@
 ---
-// Home: hero, Work Index, then one anchored section per Work Index category.
+// Home: hero, Work Index, then the project cards (one pinned section per Work Index category).
 import Site from '../layouts/Site.astro';
 import Hero from '../components/Hero.astro';
 import WorkIndex from '../components/WorkIndex.astro';
-import { CATEGORIES } from '../data/work-index.js';
+import ProjectCards from '../components/ProjectCards.astro';
 import Fish from '../components/Fish.astro';
 import FishSpot from '../components/FishSpot.astro';
 import NetworkGlow from '../components/NetworkGlow.astro';
@@ -43,19 +43,12 @@ const builds = [
     <FishSpot scale={0.5} />
     <WorkIndex />
   </section>
-  {/* Targets for the Work Index category bubbles. Placeholders until the section designs are in. */}
-  {CATEGORIES.map((c) => (
-    <section class="category" id={c.id}>
-      <h2 class="category__title">{c.name}</h2>
-    </section>
-  ))}
+  <ProjectCards />
 </Site>
 
 <style>
   /* the fish rests in the right-hand margin of the Work Index (it may only swim the section's edges) */
   .work { --spot-x: 94%; --spot-y: 46%; position: relative; }
-  .category { position: relative; z-index: var(--z-text); padding: var(--space-6) var(--gutter); }
-  .category__title { max-width: var(--max); margin-inline: auto; font-size: var(--step-2); line-height: var(--leading-heading); letter-spacing: var(--tracking-heading); }
   @media (max-width: 767px) {
     .work { --spot-x: 78%; --spot-y: 0%; } /* no side margin on phones: it waits just above the section */
   }
