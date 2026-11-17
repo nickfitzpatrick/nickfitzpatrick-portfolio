@@ -25,6 +25,9 @@
 .pc-net path { fill: none; stroke: rgba(var(--wi-teal-rgb), .33); stroke-dasharray: 1200; stroke-dashoffset: 1200; transition: stroke-dashoffset .9s cubic-bezier(.2, .8, .2, 1), stroke .3s, stroke-width .3s; }
 .pc-net circle[data-s] { opacity: 0; }
 
+/* multi-word category titles: one word per line */
+.pc-title span, .pc-list h2 span { display: block; }
+
 .pc-card { position: absolute; width: 270px; display: flex; flex-direction: column; gap: 10px; padding: 10px 10px 16px; border-radius: 16px; border: 1px solid transparent; box-sizing: content-box;
   background: linear-gradient(#070909, #070909) padding-box, linear-gradient(135deg, #1fc3c344, #d8b13a44) border-box;
   transition: opacity .5s, transform .7s cubic-bezier(.2, .8, .2, 1), box-shadow .35s, background .35s; }

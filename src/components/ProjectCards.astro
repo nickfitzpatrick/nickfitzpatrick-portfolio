@@ -28,15 +28,24 @@ const SLOTS = [[520, 70], [880, 150], [560, 430], [920, 500]];
 const NODE = [240, 360];
 const paths = SLOTS.map(([x, y]) => `M${NODE[0]} ${NODE[1]} C 380 ${NODE[1]}, ${x - 140} ${y + 100}, ${x} ${y + 100}`);
 const pad = (v: number) => String(v).padStart(2, '0');
+// Titles with several words stack one word per line. The block stays centred on the gold node's
+// height, and the range ticks move down to sit the same distance below the last line.
+const TITLE_LINE = 96, TITLE_GAP = 34; // line height (= font size) and title-to-ticks gap, as designed
+const titleLayout = (name: string) => {
+  const words = name.split(/\s+/);
+  const top = NODE[1] - 2 - (TITLE_LINE * words.length) / 2; // one line: 310, as designed
+  return { words, top, ticks: top + TITLE_LINE * words.length + TITLE_GAP - 4 }; // one line: 440, as designed
+};
 ---
 {categories.map((cat) => {
   const P = cat.projects, pages = Math.ceil(P.length / 4);
+  const title = titleLayout(cat.name);
   return (
     <section class="pc" id={cat.id} data-pc data-pages={pages} aria-labelledby={`pc-${cat.id}`}>
       <div class="pc-pin">
         <div class="pc-stage">
-          <h2 class="pc-title" id={`pc-${cat.id}`} data-fish-avoid>{cat.name}</h2>
-          <div class="pc-ticks">
+          <h2 class="pc-title" id={`pc-${cat.id}`} data-fish-avoid style={`top:${title.top}px`}>{title.words.map((w) => <span>{w} </span>)}</h2>
+          <div class="pc-ticks" style={`top:${title.ticks}px`}>
             {pages > 1 && Array.from({ length: pages }, (_, k) => (
               <button type="button" class="pc-tick" data-k={k} data-snap><i></i>{pad(k * 4 + 1)}–{pad(Math.min(P.length, k * 4 + 4))}</button>
             ))}
@@ -64,7 +73,7 @@ const pad = (v: number) => String(v).padStart(2, '0');
       </div>
       {Array.from({ length: pages - 1 }, () => <div class="pc-spacer" aria-hidden="true"></div>)}
       <div class="pc-list">
-        <h2>{cat.name}</h2>
+        <h2>{title.words.map((w) => <span>{w} </span>)}</h2>
         <span class="pc-list-spot"><FishSpot scale={0.5} /></span>
         {P.map((p) => (
           <a class="pc-card" href={p.href} data-fish-avoid>
