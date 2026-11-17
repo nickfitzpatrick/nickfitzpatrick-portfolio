@@ -25,7 +25,7 @@ export function initWorkIndex(root) {
   // hubs
   const hubs = CATEGORIES.map((c, i) => {
     const a = document.createElement('a');
-    a.className = 'wi-hub wi-glass'; a.href = '#' + c.id; a.dataset.snap = '';
+    a.className = 'wi-hub wi-glass'; a.href = '#' + c.id; a.dataset.snap = 'fit';
     const edge = document.createElement('span'); edge.className = 'wi-edge';
     a.append(edge, c.name);
     const on = () => { if (!simple) { hubHover = i; sync(); } };
