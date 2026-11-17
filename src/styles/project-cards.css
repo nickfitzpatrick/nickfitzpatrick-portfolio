@@ -89,6 +89,11 @@
 .pc-more { position: absolute; left: 0; right: 0; bottom: 20px; text-align: center; font-size: 13px; color: var(--wi-mute); pointer-events: none; opacity: 0; transition: opacity .5s; }
 .pc :is(.pc-x, .pc-next, .pc-tick):focus-visible { outline: 1.5px solid var(--wi-ink); outline-offset: 3px; }
 
+/* closed card: the hook is cut to whole lines (with …) so text always stops short of the card's bottom edge;
+   the script sets --pc-lines from the title's height */
+.pc-pin .pc-card:not(.open) .pc-h { display: -webkit-box; -webkit-box-orient: vertical; -webkit-line-clamp: var(--pc-lines, 2); line-clamp: var(--pc-lines, 2); overflow: hidden; }
+.pc-pin .pc-card:not(.open) .pc-h[data-lines="0"] { display: none; }
+
 /* card: receding while another is open */
 .js .pc-stage.is-open .pc-card.on:not(.open) { opacity: .5; filter: blur(4px); transform: scale(.88); pointer-events: none; }
 
