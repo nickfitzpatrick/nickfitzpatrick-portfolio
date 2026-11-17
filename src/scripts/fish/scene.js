@@ -47,7 +47,7 @@ const damp = (current, target, rate, dt) => current + (target - current) * (1 - 
 const breathe = () => new Promise((resolve) => setTimeout(resolve, 0));
 const mark = (name) => performance.mark(`fish:${name}`);
 
-export async function createFish({ canvas, spots, avoid = [], url, reduced, fine }) {
+export async function createFish({ canvas, spots, avoid = [], model: modelData, reduced, fine }) {
   /* ---------- Renderer, light, camera ---------- */
   mark('start');
   const renderer = new WebGLRenderer({ canvas, alpha: true, antialias: true });
@@ -62,7 +62,7 @@ export async function createFish({ canvas, spots, avoid = [], url, reduced, fine
 
   /* ---------- Model ---------- */
   const ktx2 = new KTX2Loader().setTranscoderPath(BASIS_PATH).detectSupport(renderer);
-  const gltf = await new GLTFLoader().setKTX2Loader(ktx2).setMeshoptDecoder(MeshoptDecoder).loadAsync(url);
+  const gltf = await new GLTFLoader().setKTX2Loader(ktx2).setMeshoptDecoder(MeshoptDecoder).parseAsync(await modelData, '');
   ktx2.dispose();
   mark('loaded');
   await breathe();
@@ -187,7 +187,9 @@ export async function createFish({ canvas, spots, avoid = [], url, reduced, fine
   }
   const first = target(0);
   fish.scale = first.scale;
-  fish.x = W + size; fish.y = first.y + size * 0.2; // enters from the right edge
+  // Appears just beside its resting spot, already gliding in, so it is on screen from the first frame.
+  fish.x = first.x + size * fish.scale * 0.45; fish.y = first.y + size * fish.scale * 0.12;
+  fish.heading = Math.PI + 0.25; fish.speed = size * 0.15;
 
   if (fine) addEventListener('pointermove', (e) => { pointer.x = e.clientX; pointer.y = e.clientY; pointer.until = Infinity; }, { passive: true });
   else addEventListener('pointerdown', (e) => { pointer.x = e.clientX; pointer.y = e.clientY; pointer.until = performance.now() + 2600; }, { passive: true });
@@ -269,6 +271,10 @@ export async function createFish({ canvas, spots, avoid = [], url, reduced, fine
   addEventListener('resize', resize);
 
   await renderer.compileAsync(scene, camera); // compile shaders off the main thread before the first frame
+  scene.traverse((o) => { // upload textures now, so the fade-in never starts on an empty frame
+    for (const value of Object.values(o.material ?? {})) if (value?.isTexture) renderer.initTexture(value);
+  });
+  renderer.render(scene, camera);
   mark('compiled');
   play();
 }
