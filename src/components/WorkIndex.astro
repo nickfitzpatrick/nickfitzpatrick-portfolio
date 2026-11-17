@@ -20,7 +20,7 @@ const projects = PROJECTS.map((p) => {
     if (i < 0) throw new Error(`work-index.js: "${p.slug}" uses unknown category "${id}"`);
     return i;
   });
-  return { title: p.title, hook: p.hook, cats, img: thumb(entry.data.image), href: `/projects/${entry.slug}` };
+  return { slug: p.slug, title: p.title, hook: p.hook, cats, img: thumb(entry.data.image), href: `/projects/${entry.slug}` };
 });
 ---
 <div class="wi" data-work-index>

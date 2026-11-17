@@ -55,7 +55,7 @@ export function initProjectCards(sectionEls) {
     stage.querySelectorAll('.pc-tick').forEach((b) => b.addEventListener('click', () => jump(st, Number(b.dataset.k))));
 
     // small screens: tap to expand inline
-    const listCards = [...sec.querySelectorAll('.pc-list .pc-card')];
+    const listCards = st.list = [...sec.querySelectorAll('.pc-list .pc-card')];
     // while any card is open it fills the screen, so the fish swims behind the cards instead of leaving
     const syncFish = () => {
       const anyOpen = listCards.some((c) => c.classList.contains('expanded'));
@@ -70,6 +70,7 @@ export function initProjectCards(sectionEls) {
         const top = el.getBoundingClientRect().top;
         if (!on && top < 0) window.scrollTo({ top: top + scrollY - 72, behavior: 'instant' });
       };
+      el.pcToggle = toggle;
       el.addEventListener('click', (e) => { if (!e.target.closest('.pc-next, a, video')) toggle(!el.classList.contains('expanded')); });
       el.addEventListener('keydown', (e) => { if ((e.key === 'Enter' || e.key === ' ') && e.target === el) { e.preventDefault(); toggle(!el.classList.contains('expanded')); } });
       const nx = el.querySelector('.pc-next');
@@ -149,6 +150,39 @@ export function initProjectCards(sectionEls) {
   }
 
   addEventListener('keydown', (e) => { if (e.key === 'Escape') sections.forEach(closeCard); });
+
+  // A project picked in the Work Index: scroll to its card and open it.
+  const small = matchMedia('(max-width: 759px)');
+  document.addEventListener('project:open', ({ detail: { cat, slug } }) => {
+    const st = sections.find((s) => s.sec.id === cat);
+    if (!st) return;
+    if (small.matches) { // stacked list: expand inline, then bring its top just under the nav name
+      const el = st.list.find((c) => c.dataset.slug === slug);
+      if (!el) return;
+      if (!el.classList.contains('expanded')) el.pcToggle(true);
+      window.scrollTo({ top: el.getBoundingClientRect().top + scrollY - 72, behavior: reduced ? 'auto' : 'smooth' });
+      return;
+    }
+    const i = st.cards.findIndex((c) => c.dataset.slug === slug);
+    if (i < 0) return;
+    sections.forEach(closeCard);
+    scrollThen(st.sec.offsetTop + Math.floor(i / 4) * innerHeight, () => openCard(st, i)); // the page of the pin that holds it
+  });
+
+  // Scroll to `top`, then run `done` once the page has stopped moving (smooth scrolls of any length;
+  // not every browser has scrollend).
+  function scrollThen(top, done) {
+    window.scrollTo({ top, behavior: reduced ? 'auto' : 'smooth' });
+    let last = -1, still = 0;
+    const start = performance.now();
+    const check = () => {
+      update(); // the pin's page follows the scroll before the card opens
+      still = Math.abs(scrollY - last) < 0.5 ? still + 1 : 0; last = scrollY;
+      const settled = still >= 3 && (Math.abs(scrollY - top) < 2 || performance.now() - start > 400); // may stop short at the page end
+      if (settled || performance.now() - start > 3000) done(); else requestAnimationFrame(check);
+    };
+    requestAnimationFrame(check);
+  }
 
   function paint(st) {
     const { stage, cards, cur, hot, n, open } = st;
