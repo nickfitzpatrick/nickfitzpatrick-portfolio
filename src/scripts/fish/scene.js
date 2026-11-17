@@ -5,7 +5,7 @@
 // small square, which is what keeps this at 60fps on phones.
 //
 // Behaviour: the fish steers toward the resting spot of the section in view,
-// weaving rather than going straight, is carried a little by scrolling, drifts
+// weaving rather than going straight, holds its place on screen while the page scrolls, drifts
 // toward a nearby cursor (or tap) and gives way if it gets close. Its body
 // motion (./rig.js) and swim cycle scale with how hard it is swimming.
 import {
@@ -33,7 +33,12 @@ const TURN_POINT = 0.14; // the fish turns about its shoulders, this far ahead o
 // wandering together; BODY_PACE slows the tail beat and fin motion.
 const PACE = 0.55;
 const BODY_PACE = 0.75;
-const SCROLL_CARRY = 0.4; // share of a scroll that drags the fish along; lower keeps it in view
+// Scrolling. The fish holds its place on screen while the page scrolls under it, then swims to
+// the section now in view. If a card scrolls onto it, it slips out of sight and swims back in
+// from the side once the scrolling stops, rather than being pushed along by the card.
+const NUDGE_LIMIT = 28;   // px a scrolling card may ease the fish aside before it slips away instead
+const SCROLL_SETTLE = 260; // ms without scrolling before a fish that slipped away comes back
+const AWAY_FADE = 220;    // ms; matches the fade in Fish.astro, after which nothing is drawn
 // Keeping clear of [data-fish-avoid] elements (project cards).
 const BODY_REACH = 0.4;   // how far the body and fins reach from the canvas centre, as a share of the canvas
 const KEEP_CLEAR = 8;     // px of gap kept between the fish and anything it must not cover
@@ -136,7 +141,7 @@ export async function createFish({ canvas, spots, avoid = [], url, reduced, fine
   // fish.x / fish.y is the point it turns about (its shoulders); its middle sits behind that, on whichever side it faces away from
   const lead = () => -size * fish.scale * TURN_POINT * Math.sin(fish.yaw);
   const pointer = { x: 0, y: 0, until: 0 };
-  let lastScroll = scrollY, clock = 0;
+  let lastScroll = scrollY, clock = 0, lastScrollAt = -1e9, nudged = 0, away = false, awayAt = 0;
 
   function target(t) {
     // the resting spot of whichever section is nearest the middle of the screen
@@ -198,6 +203,14 @@ export async function createFish({ canvas, spots, avoid = [], url, reduced, fine
   const blockedBy = (list, goal) => list.find((zone) =>
     ((fish.x + lead() > zone.left && fish.x + lead() < zone.right) || (goal.x > zone.left && goal.x < zone.right)) &&
     ((fish.y <= zone.top && goal.y >= zone.bottom) || (fish.y >= zone.bottom && goal.y <= zone.top)));
+  function enterFromSide(goal) { // start just off the nearer edge of the screen, level with the goal, facing in
+    const fromRight = goal.x > W / 2;
+    fish.scale = goal.scale;
+    fish.side = fromRight ? -1 : 1; fish.yaw = fish.bodyYaw = fish.side * THREE_QUARTER; fish.yawVel = fish.bodyVel = 0;
+    const h = size * fish.scale * 0.5 + 4;
+    fish.x = (fromRight ? W + h : -h) - lead(); fish.y = goal.y;
+    fish.heading = fromRight ? Math.PI : 0; fish.turn = 0; fish.speed = size * 0.2;
+  }
   const offScreen = () => { const h = size * fish.scale * 0.5, x = fish.x + lead(); return x < -h || x > W + h || fish.y < -h || fish.y > H + h; };
 
   const first = target(0);
@@ -211,21 +224,29 @@ export async function createFish({ canvas, spots, avoid = [], url, reduced, fine
     const dt = frameDt * PACE; // everything the fish decides and does runs on its own, slower clock
     clock += dt;
     const t = clock;
-    const scrolled = scrollY - lastScroll; lastScroll = scrollY;
-    fish.y -= scrolled * SCROLL_CARRY; // the page moving past carries the water with it
+    const scrolled = scrollY - lastScroll; lastScroll = scrollY; // scrolling itself never moves the fish
+    if (scrolled) lastScrollAt = now; else if (now - lastScrollAt > SCROLL_SETTLE) nudged = 0;
 
     const goal = target(t);
-    fish.scale = damp(fish.scale, goal.scale, 1.1, dt); // recedes or approaches as it changes section
+    if (!away) fish.scale = damp(fish.scale, goal.scale, 1.1, dt); // recedes or approaches as it changes section
     const clear = zones();
     keepGoalClear(goal, clear);
-    keepFishClear(clear); // scrolling may have moved a card onto the fish
+    if (away) {
+      if (now - lastScrollAt < SCROLL_SETTLE) return; // still scrolling: stay out of sight
+      enterFromSide(goal);
+      away = false; canvas.classList.remove('is-away');
+    } else if (scrolled) {
+      const hit = clear.find((zone) => inside(zone, fish.x + lead(), fish.y));
+      if (hit) { // a card has scrolled onto the fish
+        const depth = scrolled > 0 ? fish.y - hit.top : hit.bottom - fish.y;
+        if (nudged + depth <= NUDGE_LIMIT) { fish.y += scrolled > 0 ? -depth : depth; nudged += depth; } // a small scroll just eases it aside
+        else { away = true; awayAt = now; canvas.classList.add('is-away'); return; }
+      }
+    }
     let tx = goal.x, ty = goal.y;
     const detour = blockedBy(clear, goal);
     if (detour && offScreen()) { // out of sight: come back in from the side, level with the goal
-      const fromRight = goal.x > W / 2, h = size * fish.scale * 0.5 + 4;
-      fish.x = fromRight ? W + h : -h; fish.y = goal.y;
-      fish.heading = fromRight ? Math.PI : 0; fish.turn = 0; fish.speed = size * 0.2;
-      fish.side = fromRight ? -1 : 1; fish.yaw = fish.bodyYaw = fish.side * THREE_QUARTER; fish.yawVel = fish.bodyVel = 0;
+      enterFromSide(goal);
     } else if (detour) {         // a card is in the way: leave by the nearer side of the screen, staying level
       tx = fish.x > W / 2 ? W + size : -size; ty = fish.y;
     } else if (now < pointer.until) {
@@ -281,6 +302,7 @@ export async function createFish({ canvas, spots, avoid = [], url, reduced, fine
     raf = requestAnimationFrame(frame);
     const dt = MathUtils.clamp((now - last) / 1000, 0.001, 0.05); last = now;
     step(dt, now);
+    if (away && now - awayAt > AWAY_FADE) return; // faded out: nothing to draw until it comes back
     const bob = Math.sin(clock * 1.2) * size * 0.012;
     const middle = fish.x + lead();
     canvas.style.transform = `translate3d(${(middle - size / 2).toFixed(1)}px, ${(fish.y + bob - size / 2).toFixed(1)}px, 0) scale(${fish.scale.toFixed(3)})`;
