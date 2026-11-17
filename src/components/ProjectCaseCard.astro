@@ -1,0 +1,36 @@
+---
+// One project card for ProjectCards.astro. Closed it shows thumbnail, title and hook; opened (by the
+// script) it becomes the full case study. `slot` places it on the pinned stage; without it, it is a
+// card in the small-screen list.
+interface Props {
+  p: { title: string; hook: string; thumb: string; big: string; meta: (string | undefined)[][]; sections: { label: string; html: string }[] };
+  i: number;
+  category: string;
+  next?: string;
+  slot?: number[];
+}
+const { p, i, category, next, slot } = Astro.props;
+const pad = (v: number) => String(v).padStart(2, '0');
+---
+<article class="pc-card" tabindex="0" aria-label={`${p.title}: open case study`} data-i={i}
+  data-fish-avoid={slot ? 'shown' : ''} data-cursor="grow"
+  style={slot ? `left:${slot[0]}px;top:${slot[1]}px` : undefined}>
+  <div class="pc-edge"></div>
+  <div class="pc-scroll"><div class="pc-body">
+    <div class:list={['pc-thumb', { 'has-img': p.thumb }]} style={p.thumb ? `--pc-img:url('${p.thumb}');--pc-img-big:url('${p.big}')` : undefined}></div>
+    <div class="pc-head">
+      <div class="pc-hl"><div class="pc-crumb">{category} — {p.title}</div><h3 class="pc-t">{p.title}</h3><p class="pc-h">{p.hook}</p></div>
+      <dl class="pc-meta">{p.meta.map(([k, v]) => <div><dt>{k}</dt><dd>{v}</dd></div>)}</dl>
+    </div>
+    <div class="pc-case">
+      {p.sections.map((s, k) => (
+        <div class="pc-sec"><span class="pc-lab">({pad(k + 1)}) {s.label}</span><div class="pc-md" set:html={s.html} /></div>
+      ))}
+      {next && <button type="button" class="pc-next" data-snap><span>Next in {category}</span><b>{next} →</b></button>}
+    </div>
+  </div></div>
+  <div class="pc-sheen"></div>
+  <div class="pc-prog"><i></i></div>
+  <button type="button" class="pc-x" aria-label="Close case study" data-snap>×</button>
+  <div class="pc-more" aria-hidden="true">Scroll to explore ↓</div>
+</article>

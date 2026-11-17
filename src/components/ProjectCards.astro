@@ -1,25 +1,41 @@
 ---
-// Project cards: one pinned section per Work Index category (#ai, #design, #ml, #side).
-// Projects, hooks and categories come from src/data/work-index.js, in that file's order;
-// thumbnails and case-study links come from the projects collection.
+// Project cards (3a · 6a · 7a): one pinned section per Work Index category (#ai, #design, #ml, #side).
+// Clicking a card unfolds it in place into the project's case study.
+// Projects, hooks and categories come from src/data/work-index.js, in that file's order.
+// Thumbnail, year and the case study itself come from the project's file in src/content/projects:
+// its "## Problem / ## Approach / ## Results" sections are shown as Overview / Process / Outcome;
+// any other headings are shown as written.
 import '../styles/project-cards.css';
 import { getCollection } from 'astro:content';
+import { marked } from 'marked';
 import manifest from '../data/images.json';
 import { CATEGORIES, PROJECTS } from '../data/work-index.js';
 import FishSpot from './FishSpot.astro';
+import ProjectCaseCard from './ProjectCaseCard.astro';
 
 type Optimised = { widths: number[]; base: string };
 const entries = await getCollection('projects');
-const thumb = (image?: string) => {
-  const m = image ? (manifest as Record<string, Optimised>)[image] : undefined;
-  if (!m) return image ?? '';
-  const w = m.widths.find((x) => x >= 600) ?? m.widths.at(-1); // cards are 270px wide, so about 2x for sharp screens
-  return `${m.base}-${w}.webp`;
+const image = (src?: string, min = 600) => {
+  const m = src ? (manifest as Record<string, Optimised>)[src] : undefined;
+  if (!m) return src ?? '';
+  return `${m.base}-${m.widths.find((x) => x >= min) ?? m.widths.at(-1)}.webp`;
 };
+const LABELS: Record<string, string> = { Problem: 'Overview', Approach: 'Process', Results: 'Outcome' };
+const caseStudy = (body: string) => {
+  const parts = body.split(/^## +/m).slice(1).map((chunk) => {
+    const [heading, ...rest] = chunk.split('\n');
+    return { heading: heading.trim(), html: (marked.parse(rest.join('\n')) as string).replace(/preload="[^"]*"/g, 'preload="none"') };
+  });
+  // Only files written as Problem / Approach / Results are relabelled; others keep their own headings.
+  const mapped = Object.keys(LABELS).every((h) => parts.some((x) => x.heading === h));
+  return parts.map((x) => ({ label: mapped ? LABELS[x.heading] ?? x.heading : x.heading, html: x.html }));
+};
+const catName = (id: string) => CATEGORIES.find((c) => c.id === id)?.name ?? id;
 const cards = (id: string) => PROJECTS.filter((p) => p.cats.includes(id)).map((p) => {
   const entry = entries.find((e) => e.slug === p.slug);
   if (!entry) throw new Error(`work-index.js: no project with slug "${p.slug}" in src/content/projects`);
-  return { title: p.title, hook: p.hook, thumb: thumb(entry.data.image), href: `/projects/${entry.slug}` };
+  const meta = [['Year', entry.data.date?.slice(0, 4)], ['Categories', p.cats.map(catName).join(', ')]].filter(([, v]) => v);
+  return { slug: p.slug, title: p.title, hook: p.hook, thumb: image(entry.data.image), big: image(entry.data.image, 1400), meta, sections: caseStudy(entry.body) };
 });
 const categories = CATEGORIES.map((c) => ({ ...c, projects: cards(c.id) })).filter((c) => c.projects.length);
 
@@ -41,6 +57,7 @@ const titleLayout = (name: string) => {
 {categories.map((cat) => {
   const P = cat.projects, pages = Math.ceil(P.length / 4);
   const title = titleLayout(cat.name);
+  const nextOf = (i: number) => (P.length > 1 ? P[(i + 1) % P.length].title : undefined);
   return (
     <section class="pc" id={cat.id} data-pc data-pages={pages} aria-labelledby={`pc-${cat.id}`}>
       <div class="pc-pin">
@@ -51,7 +68,7 @@ const titleLayout = (name: string) => {
               <button type="button" class="pc-tick" data-k={k} data-snap><i></i>{pad(k * 4 + 1)}–{pad(Math.min(P.length, k * 4 + 4))}</button>
             ))}
           </div>
-          {pages > 1 && <div class="pc-hint" aria-hidden="true">SCROLL ↓</div>}
+          {pages > 1 && <div class="pc-hint" aria-hidden="true">Scroll ↓</div>}
           <span class="pc-spot"><FishSpot scale={0.5} /></span>
           <svg class="pc-net" width="1280" height="800" aria-hidden="true">
             {paths.map((d, s) => (
@@ -63,25 +80,14 @@ const titleLayout = (name: string) => {
             <circle class="pc-node" cx={NODE[0]} cy={NODE[1]} r="5" fill="#d8b13a" />
             <circle class="pc-node" cx={NODE[0]} cy={NODE[1]} r="14" fill="none" stroke="#d8b13a55" />
           </svg>
-          {P.map((p, i) => (
-            <a class="pc-card" href={p.href} data-i={i} data-fish-avoid="shown" data-cursor="grow"
-               style={`left:${SLOTS[i % 4][0]}px;top:${SLOTS[i % 4][1]}px`}>
-              <div class:list={['pc-thumb', { 'has-img': p.thumb }]} style={p.thumb ? `--pc-img:url('${p.thumb}')` : undefined}></div>
-              <div class="t">{p.title}</div><div class="h">{p.hook}</div>
-            </a>
-          ))}
+          {P.map((p, i) => <ProjectCaseCard p={p} i={i} category={cat.name} next={nextOf(i)} slot={SLOTS[i % 4]} />)}
         </div>
       </div>
       {Array.from({ length: pages - 1 }, () => <div class="pc-spacer" aria-hidden="true"></div>)}
       <div class="pc-list">
         <h2>{title.words.map((w) => <span>{w} </span>)}</h2>
         <span class="pc-list-spot"><FishSpot scale={0.5} /></span>
-        {P.map((p) => (
-          <a class="pc-card" href={p.href} data-fish-avoid>
-            <div class:list={['pc-thumb', { 'has-img': p.thumb }]} style={p.thumb ? `--pc-img:url('${p.thumb}')` : undefined}></div>
-            <div class="t">{p.title}</div><div class="h">{p.hook}</div>
-          </a>
-        ))}
+        {P.map((p, i) => <ProjectCaseCard p={p} i={i} category={cat.name} next={nextOf(i)} />)}
       </div>
     </section>
   );
