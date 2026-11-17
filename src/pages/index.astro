@@ -10,8 +10,27 @@ import NetworkGlow from '../components/NetworkGlow.astro';
 import italicUrl from '@fontsource-variable/fraunces/files/fraunces-latin-wght-italic.woff2?url';
 
 const sections = [{ id: 'top', label: 'Intro' }, { id: 'work', label: 'Work' }];
-// Placeholder phrases for the looping lede: "I build ___". Edit freely; keep each under about 24 characters.
-const builds = ['research tools', 'optimization models', 'data pipelines', 'AI prototypes', 'decision systems'];
+// Phrases for the looping lede: "I build ___". Keep each under about 24 characters (the line never wraps).
+const builds = [
+  'AI products',
+  'agentic AI',
+  'prototypes',
+  'agentic workflows',
+  'decision systems',
+  'product roadmaps',
+  'customer demos',
+  'data dashboards',
+  'analytics pipelines',
+  'optimization models',
+  'ML models',
+  'computer vision models',
+  'LLM evals',
+  'RAG pipelines',
+  'design tools',
+  'user interfaces',
+  'robot learning models',
+  'interactive websites',
+];
 ---
 <Site title="Home" sections={sections}>
   <link slot="head" rel="preload" href={italicUrl} as="font" type="font/woff2" crossorigin />
