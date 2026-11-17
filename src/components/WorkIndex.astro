@@ -1,0 +1,46 @@
+---
+// Work Index: network of category hubs and project dots, with a Simple list view.
+// Content: src/data/work-index.js. Thumbnails and case-study links come from the projects collection.
+import '../styles/work-index.css';
+import { getCollection } from 'astro:content';
+import manifest from '../data/images.json';
+import { CATEGORIES, PROJECTS } from '../data/work-index.js';
+
+type Optimised = { widths: number[]; base: string };
+const entries = await getCollection('projects');
+const thumb = (image?: string) => {
+  const m = image ? (manifest as Record<string, Optimised>)[image] : undefined;
+  return m ? `${m.base}-${m.widths[0]}.webp` : image ?? ''; // smallest optimised copy, or the file itself (SVG)
+};
+const projects = PROJECTS.map((p) => {
+  const entry = entries.find((e) => e.slug === p.slug);
+  if (!entry) throw new Error(`work-index.js: no project with slug "${p.slug}" in src/content/projects`);
+  const cats = p.cats.map((id) => {
+    const i = CATEGORIES.findIndex((c) => c.id === id);
+    if (i < 0) throw new Error(`work-index.js: "${p.slug}" uses unknown category "${id}"`);
+    return i;
+  });
+  return { title: p.title, hook: p.hook, cats, img: thumb(entry.data.image), href: `/projects/${entry.slug}` };
+});
+---
+<div class="wi" data-work-index>
+  <canvas aria-hidden="true"></canvas>
+  <div class="wi-keepout" data-fish-avoid aria-hidden="true"></div>
+  <h2 class="wi-label" data-fish-avoid>WORK INDEX</h2>
+  <div class="wi-toggle" role="group" aria-label="Work index view" data-fish-avoid>
+    <span class="wi-edge"></span>
+    <button type="button" class="on" data-mode="network" aria-pressed="true" data-snap>Network</button>
+    <button type="button" data-mode="simple" aria-pressed="false" data-snap>Simple</button>
+  </div>
+  <div class="wi-card wi-glass" aria-hidden="true"><span class="wi-edge"></span><div class="wi-thumb"></div><div class="t"></div><div class="h"></div></div>
+  <div class="wi-list"><div class="wi-list-inner"></div></div>
+  <noscript>
+    <ul>{projects.map((p) => <li><a href={p.href}>{p.title}</a>: {p.hook}</li>)}</ul>
+  </noscript>
+  <script type="application/json" data-work-index-data set:html={JSON.stringify({ categories: CATEGORIES, projects })} />
+</div>
+
+<script>
+  import { initWorkIndex } from '../scripts/work-index.js';
+  document.querySelectorAll('[data-work-index]').forEach((root) => initWorkIndex(root));
+</script>

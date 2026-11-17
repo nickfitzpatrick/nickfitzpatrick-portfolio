@@ -179,9 +179,12 @@ export async function createFish({ canvas, spots, avoid = [], url, reduced, fine
     return list;
   }
   function keepGoalClear(goal, list) {
-    const grow = reach(), inView = (y) => y > grow && y < H - grow;
+    const grow = reach(), body = grow - KEEP_CLEAR, inView = (y) => y > grow && y < H - grow;
     for (const zone of list) {
       if (!inside(zone, goal.x, goal.y)) continue;
+      // beside the zone, when the whole fish fits on screen there (the Work Index leaves side margins for this)
+      const sides = [zone.left, zone.right].filter((x) => x - body >= 0 && x + body <= W);
+      if (sides.length) { goal.x = sides.sort((a, b) => Math.abs(a - goal.x) - Math.abs(b - goal.x))[0]; continue; }
       const fishAbove = fish.y < (zone.top + zone.bottom) / 2;
       const mine = fishAbove ? zone.top : zone.bottom, other = fishAbove ? zone.bottom : zone.top;
       goal.y = inView(mine) || !inView(other) ? mine : other; // stay on its side unless only the other side is on screen
