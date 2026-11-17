@@ -24,6 +24,7 @@ const cards = (id: string) => PROJECTS.filter((p) => p.cats.includes(id)).map((p
 const categories = CATEGORIES.map((c) => ({ ...c, projects: cards(c.id) })).filter((c) => c.projects.length);
 
 // Layout of the 1280 x 800 stage, as designed: four card slots and the category's gold node.
+// The node's starting place only; the script moves it to the end of the title (see project-cards.js).
 const SLOTS = [[520, 70], [880, 150], [560, 430], [920, 500]];
 const NODE = [240, 360];
 const paths = SLOTS.map(([x, y]) => `M${NODE[0]} ${NODE[1]} C 380 ${NODE[1]}, ${x - 140} ${y + 100}, ${x} ${y + 100}`);
@@ -44,7 +45,7 @@ const titleLayout = (name: string) => {
     <section class="pc" id={cat.id} data-pc data-pages={pages} aria-labelledby={`pc-${cat.id}`}>
       <div class="pc-pin">
         <div class="pc-stage">
-          <h2 class="pc-title" id={`pc-${cat.id}`} data-fish-avoid style={`top:${title.top}px`}>{title.words.map((w) => <span>{w} </span>)}</h2>
+          <h2 class="pc-title" id={`pc-${cat.id}`} data-fish-avoid style={`top:${title.top}px`} data-line={TITLE_LINE}>{title.words.map((w) => <span>{w} </span>)}</h2>
           <div class="pc-ticks" style={`top:${title.ticks}px`}>
             {pages > 1 && Array.from({ length: pages }, (_, k) => (
               <button type="button" class="pc-tick" data-k={k} data-snap><i></i>{pad(k * 4 + 1)}–{pad(Math.min(P.length, k * 4 + 4))}</button>
@@ -55,12 +56,12 @@ const titleLayout = (name: string) => {
           <svg class="pc-net" width="1280" height="800" aria-hidden="true">
             {paths.map((d, s) => (
               <>
-                <path d={d} data-s={s}></path>
-                <circle r="3" fill="#d8b13a" data-s={s}><animateMotion dur="2.4s" repeatCount="indefinite" begin={`-${s * 0.7}s`} path={d} /></circle>
+                <path d={d} data-s={s} id={`pc-${cat.id}-line-${s}`} data-slot={SLOTS[s].join(',')}></path>
+                <circle r="3" fill="#d8b13a" data-s={s}><animateMotion dur="2.4s" repeatCount="indefinite" begin={`-${s * 0.7}s`}><mpath href={`#pc-${cat.id}-line-${s}`} /></animateMotion></circle>
               </>
             ))}
-            <circle cx={NODE[0]} cy={NODE[1]} r="5" fill="#d8b13a" />
-            <circle cx={NODE[0]} cy={NODE[1]} r="14" fill="none" stroke="#d8b13a55" />
+            <circle class="pc-node" cx={NODE[0]} cy={NODE[1]} r="5" fill="#d8b13a" />
+            <circle class="pc-node" cx={NODE[0]} cy={NODE[1]} r="14" fill="none" stroke="#d8b13a55" />
           </svg>
           {P.map((p, i) => (
             <a class="pc-card" href={p.href} data-i={i} data-fish-avoid="shown" data-cursor="grow"

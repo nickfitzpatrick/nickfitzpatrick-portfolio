@@ -26,7 +26,7 @@
 .pc-net circle[data-s] { opacity: 0; }
 
 /* multi-word category titles: one word per line */
-.pc-title span, .pc-list h2 span { display: block; }
+.pc-title span, .pc-list h2 span { display: block; width: fit-content; } /* fit-content: the script measures where each line ends */
 
 .pc-card { position: absolute; width: 270px; display: flex; flex-direction: column; gap: 10px; padding: 10px 10px 16px; border-radius: 16px; border: 1px solid transparent; box-sizing: content-box;
   background: linear-gradient(#070909, #070909) padding-box, linear-gradient(135deg, #1fc3c344, #d8b13a44) border-box;
@@ -54,7 +54,7 @@ html.has-cursor .pc :is(a, button) { cursor: none; }
 .pc-list { display: none; }
 @media (max-width: 759px) {
   .pc-pin, .pc-spacer { display: none; }
-  .pc-list { position: relative; z-index: var(--z-text); display: flex; flex-direction: column; gap: 20px; padding: 64px 24px; }
+  .pc-list { position: relative; z-index: var(--z-text); display: flex; flex-direction: column; gap: 20px; padding: 64px var(--gutter); } /* lines up with the site name in the nav */
   .pc-list h2 { font-family: var(--font-pc-serif); font-weight: 400; font-size: 56px; margin: 0 0 8px; letter-spacing: normal; }
   .pc-list .pc-card { position: static; width: auto; }
   .pc-list .pc-thumb { height: 180px; }
