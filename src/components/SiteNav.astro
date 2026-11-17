@@ -1,0 +1,70 @@
+---
+// Persistent nav: top bar on desktop, thumb-reach bar on small screens.
+// In-page sections get a "you are here" dot; other links go to existing pages.
+interface Props { sections?: { id: string; label: string }[] }
+const { sections = [] } = Astro.props;
+const pages = [
+  { href: '/background', label: 'Background' },
+  { href: '/resume', label: 'Resume' },
+];
+---
+<header class="nav">
+  <a class="nav__name" href="#top" data-snap>Nick Fitzpatrick</a>
+  <nav aria-label="Main">
+    <ul class="nav__links">
+      {sections.map((s) => <li><a class="nav__link" href={`#${s.id}`} data-section={s.id} data-snap>{s.label}</a></li>)}
+      {pages.map((p) => <li><a class="nav__link" href={p.href} data-snap>{p.label}</a></li>)}
+    </ul>
+  </nav>
+</header>
+
+<script>
+  import { initNav } from '../scripts/nav.js';
+  initNav();
+</script>
+
+<style>
+  .nav {
+    position: fixed; z-index: var(--z-nav); inset: 0 0 auto 0;
+    display: flex; justify-content: space-between; align-items: center;
+    padding: var(--space-3) var(--gutter);
+    font-size: var(--step--1);
+    pointer-events: none;
+  }
+  .nav::before { /* soft fade so links stay readable over media */
+    content: ''; position: absolute; inset: 0 0 -2.5rem 0; z-index: -1;
+    background: linear-gradient(rgba(var(--scrim), 0.96) 0%, rgba(var(--scrim), 0.8) 45%, rgba(var(--scrim), 0));
+  }
+  .nav a { pointer-events: auto; }
+  .nav__name {
+    font-weight: var(--weight-strong); letter-spacing: -0.01em;
+    min-height: var(--tap); display: inline-flex; align-items: center;
+    transition: opacity var(--dur-1) var(--ease-soft);
+  }
+  .nav__name:hover { opacity: 0.75; }
+  .nav__name:active { opacity: 0.5; }
+  .nav__links { display: flex; gap: var(--space-1); }
+  .nav__link {
+    display: inline-flex; align-items: center; min-height: var(--tap);
+    padding: 0 var(--space-3); border-radius: 99px; color: var(--ink-2);
+    transition: color var(--dur-1) var(--ease-soft), transform var(--dur-1) var(--ease-out);
+  }
+  .nav__link::before { /* current-section dot grows in */
+    content: ''; width: 5px; height: 5px; margin-right: 0; border-radius: 50%; background: currentColor;
+    scale: 0; margin-left: -5px;
+    transition: scale var(--dur-2) var(--ease-out), margin var(--dur-2) var(--ease-out);
+  }
+  .nav__link:hover, .nav__link:focus-visible, .nav__link[aria-current] { color: var(--ink); }
+  .nav__link:active { transform: scale(0.96); }
+  .nav__link[aria-current]::before { scale: 1; margin-left: 0; margin-right: var(--space-2); }
+
+  @media (max-width: 45em) {
+    .nav::before { inset-block-end: -1.5rem; }
+    .nav__links {
+      position: fixed; left: 50%; bottom: max(var(--space-3), env(safe-area-inset-bottom)); translate: -50% 0;
+      padding: var(--space-1); border: 1px solid var(--line); border-radius: 99px;
+      background: rgba(var(--scrim), 0.78); -webkit-backdrop-filter: blur(14px); backdrop-filter: blur(14px);
+    }
+    .nav__link { padding: 0 0.85rem; }
+  }
+</style>

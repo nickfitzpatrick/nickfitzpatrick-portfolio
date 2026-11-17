@@ -1,0 +1,40 @@
+---
+// Ambience: a few small bubbles rising behind everything. Decorative only.
+// Built by script so nothing renders (or animates) under prefers-reduced-motion.
+---
+<div class="bubbles" aria-hidden="true"></div>
+
+<script>
+  import { initBubbles } from '../scripts/bubbles.js';
+  initBubbles(document.querySelector('.bubbles'));
+</script>
+
+<style>
+  .bubbles {
+    position: fixed; inset: 0; z-index: var(--z-ambient); pointer-events: none; overflow: hidden; contain: strict;
+    opacity: 0; transition: opacity var(--dur-slow) var(--ease-soft);
+  }
+  .bubbles.is-on { opacity: 1; }
+  .bubbles :global(.bubble) {
+    position: absolute; left: var(--x); bottom: -1.5rem; width: var(--size); height: var(--size);
+    opacity: 0; will-change: transform, opacity;
+    animation: bubble-rise var(--rise) var(--ease-rise) var(--delay) infinite;
+  }
+  .bubbles :global(.bubble i) {
+    display: block; width: 100%; height: 100%; border-radius: 50%;
+    border: 1px solid rgba(255, 255, 255, 0.85);
+    background: radial-gradient(circle at 32% 30%, rgba(255, 255, 255, 0.5) 0, rgba(255, 255, 255, 0) 40%);
+    filter: blur(var(--blur));
+    animation: bubble-sway var(--sway-time) var(--ease-in-out) infinite alternate;
+  }
+  @keyframes bubble-rise {
+    0% { transform: translate3d(0, 0, 0); opacity: 0; }
+    10% { opacity: var(--alpha); }
+    82% { opacity: var(--alpha); }
+    100% { transform: translate3d(0, -112vh, 0); opacity: 0; }
+  }
+  @keyframes bubble-sway {
+    from { transform: translateX(calc(var(--sway) * -1)); }
+    to { transform: translateX(var(--sway)); }
+  }
+</style>

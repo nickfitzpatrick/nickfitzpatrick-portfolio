@@ -1,0 +1,48 @@
+---
+// Full-height intro. Name lines rise in once on load; the slot holds the fish's resting spot.
+// The lede is a plain sentence, or a lead-in plus a looping list: lede="I build" rotate={[...]}.
+import Rotator from './Rotator.astro';
+interface Props { lines: string[]; lede: string; rotate?: string[] }
+const { lines, lede, rotate } = Astro.props;
+---
+<section class="hero" id="top">
+  <slot />
+  <div class="hero__text">
+    <h1 class="hero__name">
+      {lines.map((line) => <span class="hero__line"><span class="hero__word">{line}</span></span>)}
+    </h1>
+    {rotate?.length
+      ? <p class="hero__lede hero__lede--rotating">{lede} <Rotator items={rotate} /></p>
+      : <p class="hero__lede">{lede}</p>}
+  </div>
+</section>
+
+<style>
+  .hero {
+    --spot-x: 73%; --spot-y: 40%;
+    position: relative; min-height: 100vh; min-height: 100svh;
+    display: flex; align-items: flex-end;
+    padding: var(--space-8) var(--gutter) var(--space-6);
+  }
+  .hero__text { position: relative; z-index: var(--z-text); width: 100%; max-width: var(--max); margin-inline: auto; }
+  .hero__name {
+    font-size: var(--step-hero); line-height: var(--leading-display); letter-spacing: var(--tracking-display);
+    margin-left: -0.05em; /* optical alignment of the N stem with the body text */
+  }
+  .hero__line { display: block; clip-path: inset(-0.12em -0.1em -0.24em -0.1em); }
+  .hero__word { display: block; animation: hero-rise var(--dur-slow) var(--ease-out) both; }
+  .hero__line:nth-child(2) .hero__word { animation-delay: 90ms; }
+  .hero__line:nth-child(3) .hero__word { animation-delay: 180ms; }
+  .hero__lede {
+    max-width: 26ch; margin-top: var(--space-5);
+    font-size: var(--step-1); line-height: 1.32; color: var(--ink-2);
+    animation: hero-fade var(--dur-slow) var(--ease-out) 320ms both;
+  }
+  .hero__lede--rotating { max-width: none; white-space: nowrap; } /* one line, so a changing phrase never moves the name */
+  @keyframes hero-rise { from { transform: translate3d(0, 112%, 0); } }
+  @keyframes hero-fade { from { opacity: 0; transform: translate3d(0, 0.6rem, 0); } }
+  @media (max-width: 45em) {
+    .hero { --spot-x: 64%; --spot-y: 27%; padding-bottom: calc(var(--space-7) + var(--space-4)); }
+    .hero__lede { margin-top: var(--space-4); }
+  }
+</style>

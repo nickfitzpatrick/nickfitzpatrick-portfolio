@@ -1,0 +1,77 @@
+/* Design tokens: the one place for color, type, spacing, motion and layers.
+   Components read these; nothing else hard-codes a value. */
+:root {
+  /* Color: black base, monochrome ink. Color comes only from the fish and project media. */
+  --black: #000;
+  --ink: #f5f5f2;        /* 19.3:1 on black */
+  --ink-2: #b9b9b4;      /* 10.6:1 */
+  --ink-3: #8e8e89;      /* 6.3:1, the floor for small text */
+  --line: #262625;       /* hairlines only, never text */
+  --scrim: 0, 0, 0;      /* rgb parts for gradients over media */
+
+  /* The betta's own colours, sampled from the model. Use sparingly: accent text only. */
+  --betta-teal: #1ec9e5;   /* 10.5:1 on black */
+  --betta-green: #45d283;  /* 10.8:1 */
+  --betta-amber: #e4a92b;  /* 10.0:1 */
+  /* Network glow (hero background revealed around the cursor) */
+  --net-line: #7fd8cc;
+  --net-node: #f4f2ec;
+  --net-node-alt: #d8b13a;
+  --betta-gradient: linear-gradient(90deg, var(--betta-teal) 0%, var(--betta-green) 42%, var(--betta-amber) 100%);
+
+  /* Type: one display face, one body face */
+  --font-display: 'Fraunces', 'Fraunces Fallback', 'Times New Roman', serif;
+  --font-body: 'Geist', 'Geist Fallback', system-ui, -apple-system, 'Segoe UI', sans-serif;
+  --weight-display: 300;
+  --weight-body: 400;
+  --weight-strong: 500;
+
+  /* Fluid scale (320px to 1600px viewports) */
+  --step--1: clamp(0.8125rem, 0.79rem + 0.1vw, 0.875rem);
+  --step-0: clamp(1rem, 0.97rem + 0.16vw, 1.125rem);
+  --step-1: clamp(1.2rem, 1.1rem + 0.5vw, 1.6rem);
+  --step-2: clamp(1.75rem, 1.35rem + 2vw, 3.25rem);
+  --step-3: clamp(2.4rem, 1.6rem + 4vw, 5.5rem);
+  --step-hero: clamp(3.6rem, 0.6rem + 13.4vw, 13.5rem);
+  --leading-display: 0.9;
+  --leading-heading: 1.08;
+  --leading-body: 1.55;
+  --tracking-display: -0.045em;
+  --tracking-heading: -0.025em;
+  --measure: 34rem;      /* about 65 characters of body text */
+
+  /* Space */
+  --space-1: 0.25rem;
+  --space-2: 0.5rem;
+  --space-3: 1rem;
+  --space-4: 1.5rem;
+  --space-5: 2.5rem;
+  --space-6: 4rem;
+  --space-7: 6.5rem;
+  --space-8: 10.5rem;
+  --gutter: clamp(1.25rem, 4vw, 3.5rem);
+  --grid-gap: clamp(1rem, 2vw, 2rem);
+  --max: 90rem;
+  --tap: 2.75rem;        /* 44px minimum touch target */
+
+  /* Motion: UI 200 to 600ms, ambience slower. No default easings. */
+  --ease-out: cubic-bezier(0.16, 1, 0.3, 1);
+  --ease-in-out: cubic-bezier(0.65, 0, 0.35, 1);
+  --ease-soft: cubic-bezier(0.33, 0, 0.2, 1);
+  --ease-rise: cubic-bezier(0.42, 0.08, 0.72, 0.96);
+  --dur-1: 200ms;
+  --dur-2: 360ms;
+  --dur-3: 600ms;
+  --dur-slow: 1200ms;
+
+  /* Layers: ambience < media < fish < text < nav < cursor */
+  --z-ambient: 0;
+  --z-media: 1;
+  --z-fish: 2;
+  --z-text: 3;
+  --z-nav: 10;
+  --z-cursor: 20;
+
+  /* Fish */
+  --fish-size: clamp(13.5rem, 26vw, 24rem);
+}

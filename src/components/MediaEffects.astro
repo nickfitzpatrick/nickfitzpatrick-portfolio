@@ -1,0 +1,18 @@
+---
+// Include once on any page that uses [data-reveal] / [data-parallax] media.
+---
+<svg class="media-filters" width="0" height="0" aria-hidden="true" focusable="false">
+  <filter id="liquid" x="-4%" y="-4%" width="108%" height="108%">
+    <feTurbulence type="fractalNoise" baseFrequency="0.008 0.014" numOctaves="2" seed="4" result="noise" />
+    <feDisplacementMap in="SourceGraphic" in2="noise" scale="0" xChannelSelector="R" yChannelSelector="G" />
+  </filter>
+</svg>
+
+<script>
+  import { initMedia } from '../scripts/media.js';
+  initMedia();
+</script>
+
+<style>
+  .media-filters { position: absolute; }
+</style>
