@@ -43,9 +43,9 @@
 .js .pc-pin .pc-card.past { transform: translateY(-60px); }
 .js .pc-pin .pc-card.on { opacity: 1; transform: none; pointer-events: auto; }
 .pc-stage.has-hover .pc-card.on:not(.hot) { opacity: .4; }
-/* thin teal-to-gold edge, same as the Work Index cards; a masked ring so it never tints the frosted glass */
+/* thin edge, teal-to-gold when lit (same as the Work Index cards); a masked ring so it never tints the frosted glass */
 .pc-edge { position: absolute; inset: 0; z-index: 2; border-radius: inherit; padding: 1px; pointer-events: none;
-  background: linear-gradient(120deg, var(--wi-teal) 0%, rgba(var(--wi-wire-rgb), .25) 40%, rgba(var(--wi-gold-rgb), .25) 60%, var(--wi-gold) 100%);
+  background: #ffffff14; /* quiet by default; lights up teal-to-gold on hover, focus and when open */
   -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0); -webkit-mask-composite: xor; mask-composite: exclude; transition: background .35s; }
 .pc-card.hot .pc-edge, .pc-card.open .pc-edge { background: linear-gradient(120deg, var(--wi-teal), rgba(var(--wi-gold-rgb), .55) 55%, var(--wi-gold)); }
 .pc-card.hot { box-shadow: 0 0 40px #1fc3c330; }
