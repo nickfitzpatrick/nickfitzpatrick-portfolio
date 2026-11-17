@@ -9,7 +9,7 @@ const GRASS = {
   brightness: 1.5, // blade lightness multiplier
   swaySpeed: 0.5, // current speed
   partStiffness: 0.0025, partDamping: 0.93, // pointer parting: lower stiffness = slower
-  returnStiffness: 0.01, returnDamping: 0.85, // springing back once the pointer or finger has gone (about 0.75s, no wobble)
+  returnStiffness: 0.004, returnDamping: 0.9, // springing back once the pointer or finger has gone (about 1.1s, no wobble)
   glowChance: 0.08, // share of mid/front blades with glowing tips
 };
 const TIPS = ['31,195,195', '216,177,58']; // --wi-teal, --wi-gold
@@ -98,7 +98,7 @@ export function initSeagrass(canvas) {
   // briefly after its last move, then lets go so the blades spring back.
   let letGo = 0;
   const release = () => { pointer = null; clearTimeout(letGo); };
-  const releaseSoon = () => { clearTimeout(letGo); letGo = setTimeout(release, 900); };
+  const releaseSoon = () => { clearTimeout(letGo); letGo = setTimeout(release, 1200); };
   host.addEventListener('pointermove', (e) => {
     const r = canvas.getBoundingClientRect(); pointer = { x: e.clientX - r.left, y: e.clientY - r.top };
     if (e.pointerType === 'touch') releaseSoon();
