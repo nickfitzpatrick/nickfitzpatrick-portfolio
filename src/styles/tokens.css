@@ -30,7 +30,7 @@
   --wi-ink-rgb: 244, 242, 236;
   --font-wi: 'Instrument Sans', sans-serif;
   --font-wi-mono: 'JetBrains Mono', monospace;
-  --font-pc-serif: 'Instrument Serif', serif; /* project cards section titles */
+  --font-pc: 'Switzer', 'Instrument Sans', sans-serif; /* project cards section: Switzer only (loaded from Fontshare, see ProjectCards.astro) */
   --betta-gradient: linear-gradient(90deg, var(--betta-teal) 0%, var(--betta-green) 42%, var(--betta-amber) 100%);
 
   /* Type: one display face, one body face */

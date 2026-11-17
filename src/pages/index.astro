@@ -34,6 +34,10 @@ const builds = [
 ---
 <Site title="Home" sections={sections}>
   <link slot="head" rel="preload" href={italicUrl} as="font" type="font/woff2" crossorigin />
+  {/* Switzer for the project cards, from Fontshare. Loaded without blocking the page; swap for self-hosted files when available. */}
+  <link slot="head" rel="preconnect" href="https://api.fontshare.com" crossorigin />
+  <link slot="head" rel="preconnect" href="https://cdn.fontshare.com" crossorigin />
+  <link slot="head" rel="stylesheet" href="https://api.fontshare.com/v2/css?f[]=switzer@400,500,600&display=swap" media="print" onload="this.media='all'" />
   <Fish />
   <Hero lines={['Nick', 'Fitzpatrick']} lede="I build" rotate={builds}>
     <NetworkGlow />
