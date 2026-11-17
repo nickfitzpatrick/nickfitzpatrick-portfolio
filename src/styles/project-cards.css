@@ -43,11 +43,12 @@
 .js .pc-pin .pc-card.past { transform: translateY(-60px); }
 .js .pc-pin .pc-card.on { opacity: 1; transform: none; pointer-events: auto; }
 .pc-stage.has-hover .pc-card.on:not(.hot) { opacity: .4; }
-/* thin edge, teal-to-gold when lit (same as the Work Index cards); a masked ring so it never tints the frosted glass */
-.pc-edge { position: absolute; inset: 0; z-index: 2; border-radius: inherit; padding: 1px; pointer-events: none;
-  background: #ffffff14; /* quiet by default; lights up teal-to-gold on hover, focus and when open */
-  -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0); -webkit-mask-composite: xor; mask-composite: exclude; transition: background .35s; }
-.pc-card.hot .pc-edge, .pc-card.open .pc-edge { background: linear-gradient(120deg, var(--wi-teal), rgba(var(--wi-gold-rgb), .55) 55%, var(--wi-gold)); }
+/* thin teal-to-gold edge (same as the Work Index cards): quiet at rest, full when lit by hover, focus or open;
+   a masked ring so it never tints the frosted glass */
+.pc-edge { position: absolute; inset: 0; z-index: 2; border-radius: inherit; padding: 1px; pointer-events: none; opacity: .3;
+  background: linear-gradient(120deg, var(--wi-teal), rgba(var(--wi-gold-rgb), .55) 55%, var(--wi-gold));
+  -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0); -webkit-mask-composite: xor; mask-composite: exclude; transition: opacity .35s; }
+.pc-card.hot .pc-edge, .pc-card.open .pc-edge { opacity: 1; }
 .pc-card.hot { box-shadow: 0 0 40px #1fc3c330; }
 .pc-card:focus-visible { outline: 1.5px solid var(--wi-ink); outline-offset: 4px; }
 .pc-scroll { position: absolute; inset: 0; overflow: hidden; border-radius: inherit; border: 1px solid transparent; background: #070909; background-clip: padding-box;
@@ -135,7 +136,7 @@ html.has-cursor .pc :is(a, button, .pc-card) { cursor: none; }
   .pc-list h2 { font-weight: 500; text-wrap: nowrap; letter-spacing: -.035em; font-size: 56px; margin: 0 0 8px; font-family: var(--font-pc); line-height: 1; }
   .pc-list .pc-card { position: relative; width: auto; height: auto; }
   .pc-list .pc-scroll { position: relative; inset: auto; background: #07090999; -webkit-backdrop-filter: blur(12px); backdrop-filter: blur(12px); } /* frosted, so the fish shows behind without hurting legibility */
-  .pc-list .pc-card.expanded .pc-edge { background: linear-gradient(120deg, var(--wi-teal), rgba(var(--wi-gold-rgb), .55) 55%, var(--wi-gold)); }
+  .pc-list .pc-card.expanded .pc-edge { opacity: 1; }
   .pc-list .pc-card.expanded { box-shadow: 0 0 40px #1fc3c330; }
   .pc-list .pc-thumb { height: 190px; }
   .pc-list .pc-head { flex-direction: column; gap: 16px; }
