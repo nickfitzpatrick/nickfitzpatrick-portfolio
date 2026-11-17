@@ -10,6 +10,14 @@ const HUB_ROW_TOP = 140;       // Simple view: where the row of hubs sits
 const LIST_TOP = 200;          // Simple view: where the list starts under one row of hubs
 const HIT_RADIUS = 16;         // px around a dot that counts as hovering it
 
+// Opening a project: scroll to its card in the project-cards section of category `k` and open it
+// there (project-cards.js listens). Falls back to the case-study page if that section isn't on the page.
+function openProject(p, k, cats) {
+  const cat = cats[k].id;
+  if (!document.getElementById(cat)?.matches('[data-pc]')) { location.href = p.href; return; }
+  document.dispatchEvent(new CustomEvent('project:open', { detail: { cat, slug: p.slug } }));
+}
+
 export function initWorkIndex(root) {
   const { categories: CATEGORIES, projects: PROJECTS } = JSON.parse(root.querySelector('[data-work-index-data]').textContent);
   const cv = root.querySelector('canvas'), ctx = cv.getContext('2d');
@@ -99,6 +107,7 @@ export function initWorkIndex(root) {
       const t = document.createElement('span'); t.className = 't'; t.textContent = p.title;
       const h = document.createElement('span'); h.className = 'h'; h.textContent = p.hook;
       const ar = document.createElement('span'); ar.className = 'a'; ar.textContent = '→'; ar.setAttribute('aria-hidden', 'true');
+      a.addEventListener('click', (e) => { e.preventDefault(); openProject(p, simCat, CATEGORIES); }); // in the category being browsed
       a.append(th, t, h, ar); return a;
     }));
   }
@@ -168,7 +177,7 @@ export function initWorkIndex(root) {
     if (hit !== dotHover) { dotHover = hit; setPointer(hit >= 0); if (hit >= 0) showCard(hit); else card.classList.remove('show'); wake(); }
   });
   root.addEventListener('mouseleave', () => { dotHover = -1; card.classList.remove('show'); setPointer(false); wake(); });
-  root.addEventListener('click', (e) => { if (!simple && dotHover >= 0 && !e.target.closest('.wi-hub, .wi-toggle')) location.href = PROJECTS[dotHover].href; });
+  root.addEventListener('click', (e) => { if (!simple && dotHover >= 0 && !e.target.closest('.wi-hub, .wi-toggle')) openProject(PROJECTS[dotHover], PROJECTS[dotHover].cats[0], CATEGORIES); }); // in its first category
   root.querySelectorAll('.wi-toggle button').forEach((b) => b.addEventListener('click', () => {
     simple = b.dataset.mode === 'simple'; if (simple) simpleSince = performance.now();
     hubHover = -1; dotHover = -1; setPointer(false); placeHubs(); sync();

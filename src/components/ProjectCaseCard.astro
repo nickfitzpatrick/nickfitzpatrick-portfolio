@@ -3,7 +3,7 @@
 // script) it becomes the full case study. `slot` places it on the pinned stage; without it, it is a
 // card in the small-screen list.
 interface Props {
-  p: { title: string; hook: string; thumb: string; big: string; meta: (string | undefined)[][]; sections: { label: string; html: string }[] };
+  p: { slug: string; title: string; hook: string; thumb: string; big: string; meta: (string | undefined)[][]; sections: { label: string; html: string }[] };
   i: number;
   category: string;
   next?: string;
@@ -12,7 +12,7 @@ interface Props {
 const { p, i, category, next, slot } = Astro.props;
 const pad = (v: number) => String(v).padStart(2, '0');
 ---
-<article class="pc-card" tabindex="0" aria-label={`${p.title}: open case study`} data-i={i}
+<article class="pc-card" tabindex="0" aria-label={`${p.title}: open case study`} data-i={i} data-slug={p.slug}
   data-fish-avoid={slot ? 'shown' : ''} data-cursor="grow"
   style={slot ? `left:${slot[0]}px;top:${slot[1]}px` : undefined}>
   <div class="pc-edge"></div>
