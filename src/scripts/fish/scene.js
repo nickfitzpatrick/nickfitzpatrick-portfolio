@@ -33,6 +33,10 @@ const TURN_POINT = 0.14; // the fish turns about its shoulders, this far ahead o
 // wandering together; BODY_PACE slows the tail beat and fin motion.
 const PACE = 0.55;
 const BODY_PACE = 0.75;
+// First appearance: it swims in from just off the right edge at a brisker pace, then eases
+// into its normal calm pace as it reaches its spot, so it arrives within about a second.
+const ENTRY_PACE = 1.5;      // PACE while swimming in
+const ENTRY_SETTLE = 0.7;    // within this many body lengths of the spot it is back to normal pace
 // Scrolling. The fish holds its place on screen while the page scrolls under it, then swims to
 // the section now in view. Nothing pushes it and it never disappears: if content it should
 // stay off ([data-fish-avoid]) scrolls onto it, it simply swims out from behind that content.
@@ -187,15 +191,21 @@ export async function createFish({ canvas, spots, avoid = [], model: modelData, 
   }
   const first = target(0);
   fish.scale = first.scale;
-  // Appears just beside its resting spot, already gliding in, so it is on screen from the first frame.
-  fish.x = first.x + size * fish.scale * 0.45; fish.y = first.y + size * fish.scale * 0.12;
-  fish.heading = Math.PI + 0.25; fish.speed = size * 0.15;
+  // Starts just off the right edge, level with its spot and already swimming in.
+  fish.x = W + size * fish.scale * 0.42 - lead(); fish.y = first.y + size * fish.scale * 0.08;
+  fish.heading = Math.PI + 0.06; fish.speed = size * 0.9;
+  let entry = 1; // 1 while swimming in, easing to 0 as it arrives
 
   if (fine) addEventListener('pointermove', (e) => { pointer.x = e.clientX; pointer.y = e.clientY; pointer.until = Infinity; }, { passive: true });
   else addEventListener('pointerdown', (e) => { pointer.x = e.clientX; pointer.y = e.clientY; pointer.until = performance.now() + 2600; }, { passive: true });
 
   function step(frameDt, now) {
-    const dt = frameDt * PACE; // everything the fish decides and does runs on its own, slower clock
+    if (entry > 0) { // ease back to the normal pace as it nears its spot
+      const spot = target(clock), away = Math.hypot(spot.x - fish.x, spot.y - fish.y) / (size * fish.scale);
+      entry = Math.min(entry, MathUtils.clamp((away - ENTRY_SETTLE * 0.4) / ENTRY_SETTLE, 0, 1));
+    }
+    const pace = MathUtils.lerp(PACE, ENTRY_PACE, entry);
+    const dt = frameDt * pace; // everything the fish decides and does runs on its own, slower clock
     clock += dt;
     const t = clock;
     const goal = target(t);
@@ -248,7 +258,7 @@ export async function createFish({ canvas, spots, avoid = [], model: modelData, 
     fish.roll = damp(fish.roll, bank, 3.5, dt);
 
     mixer.timeScale = 0.6 + fish.effort * 1.6; // the clip's own fin drift also follows effort
-    const recoil = rig.update(frameDt * BODY_PACE, { effort: fish.effort, curl });
+    const recoil = rig.update(frameDt * MathUtils.lerp(BODY_PACE, 1.2, entry), { effort: fish.effort, curl });
     pivot.rotation.set(fish.pitch, fish.yaw + recoil, fish.roll);
   }
 
