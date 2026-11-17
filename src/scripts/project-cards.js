@@ -24,9 +24,9 @@ export function initProjectCards(sectionEls) {
       place(el, i);
       el.addEventListener('mouseenter', () => { if (st.open < 0) { st.hot = i; paint(st); } });
       el.addEventListener('mouseleave', () => { if (st.open < 0) { st.hot = -1; paint(st); } el.style.setProperty('--tx', 0); el.style.setProperty('--ty', 0); });
-      el.addEventListener('click', (e) => { if (st.open < 0) { e.stopPropagation(); openCard(st, i); } });
+      el.addEventListener('click', (e) => { if (st.open < 0) { e.stopPropagation(); settleThenOpen(st, i); } });
       el.addEventListener('keydown', (e) => {
-        if ((e.key === 'Enter' || e.key === ' ') && e.target === el && st.open < 0) { e.preventDefault(); openCard(st, i); }
+        if ((e.key === 'Enter' || e.key === ' ') && e.target === el && st.open < 0) { e.preventDefault(); settleThenOpen(st, i); }
       });
       el.addEventListener('focus', () => { // a keyboard user tabbing to a card on another page: go there
         if (st.open >= 0) return;
@@ -40,7 +40,6 @@ export function initProjectCards(sectionEls) {
         const r = el.getBoundingClientRect(), x = (e.clientX - r.left) / r.width, y = (e.clientY - r.top) / r.height;
         el.style.setProperty('--tx', ((x - 0.5) * 2).toFixed(3)); el.style.setProperty('--ty', ((y - 0.5) * 2).toFixed(3));
         el.style.setProperty('--mx', x * 100 + '%'); el.style.setProperty('--my', y * 100 + '%');
-        el.querySelector('.pc-thumb').style.backgroundPosition = `${-(x - 0.5) * 20}px ${-(y - 0.5) * 12}px`;
       });
       const sc = el.querySelector('.pc-scroll');
       sc.addEventListener('scroll', () => {
@@ -94,9 +93,20 @@ export function initProjectCards(sectionEls) {
   function shut(st) { // undo the open state of the current card, without touching anything else
     const el = st.cards[st.open];
     el.classList.remove('open', 'scrolled');
-    el.querySelector('.pc-thumb').style.backgroundPosition = '';
     el.dataset.cursor = 'grow';
     place(el, st.open);
+  }
+
+  // If the section is only partly on screen (the pin isn't stuck to the top yet, or is leaving),
+  // scroll it flush first; otherwise the pin's clipping cuts the open card in half.
+  function settleThenOpen(st, i) {
+    const off = st.sec.querySelector('.pc-pin').getBoundingClientRect().top;
+    if (Math.abs(off) < 2) return openCard(st, i);
+    let done = false;
+    const go = () => { if (done) return; done = true; removeEventListener('scrollend', go); openCard(st, i); };
+    addEventListener('scrollend', go, { once: true });
+    setTimeout(go, reduced ? 50 : 700); // browsers without scrollend
+    scrollBy({ top: off, behavior: reduced ? 'auto' : 'smooth' });
   }
 
   function openCard(st, i) {
