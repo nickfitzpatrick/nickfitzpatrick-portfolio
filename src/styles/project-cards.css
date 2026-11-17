@@ -1,0 +1,63 @@
+/*
+  Project cards: ported from the "pinned scroll network (3a)" design. Sizes, colours and timings
+  are as designed; class names are prefixed (pc-) so they cannot clash with the rest of the site.
+  - One pinned section per category. Each holds still while scrolling swaps its projects 4 at a time.
+  - Lines run from the category's gold node to each card; gold sparks travel along them.
+  - Hover a card: its line lights up teal and the other cards dim.
+  - Range ticks (01-04, 05-08...) show position; click to jump.
+  - Under 760px wide: a simple stacked list (no pinning).
+  Content comes from src/data/work-index.js; behaviour lives in src/scripts/project-cards.js.
+*/
+.pc { position: relative; color: var(--wi-ink); font-family: var(--font-wi); font-size: 16px; line-height: normal; }
+.pc a { color: var(--wi-ink); text-decoration: none; }
+.pc a:hover { color: var(--wi-teal); }
+.pc-pin { position: sticky; top: 0; z-index: var(--z-text); height: 100vh; overflow: hidden; display: flex; align-items: center; justify-content: center; }
+.pc-stage { position: relative; width: 1280px; height: 800px; flex: none; transform-origin: center; }
+.pc-title { position: absolute; left: 80px; top: 310px; font-family: var(--font-pc-serif); font-size: 96px; line-height: 1; font-weight: 400; margin: 0; letter-spacing: normal; text-wrap: nowrap; }
+.pc-ticks { position: absolute; left: 84px; top: 440px; display: flex; flex-direction: column; gap: 10px; }
+.pc-tick { display: flex; align-items: center; gap: 12px; background: none; border: 0; padding: 0; cursor: pointer; font: 400 12px var(--font-wi-mono); letter-spacing: .06em; color: #5a5a56; }
+.pc-tick i { height: 1px; width: 12px; background: currentColor; transition: width .4s; }
+.pc-tick.on { color: var(--wi-ink); } .pc-tick.on i { width: 32px; }
+.pc-tick:hover { color: var(--wi-mute); }
+.pc-tick:focus-visible { outline: 1.5px solid var(--wi-ink); outline-offset: 4px; }
+.pc-hint { position: absolute; left: 84px; bottom: 40px; font: 400 11px var(--font-wi-mono); color: var(--wi-dim); letter-spacing: .1em; transition: opacity .4s; }
+.pc-net { position: absolute; inset: 0; pointer-events: none; }
+.pc-net path { fill: none; stroke: rgba(var(--wi-teal-rgb), .33); stroke-dasharray: 1200; stroke-dashoffset: 1200; transition: stroke-dashoffset .9s cubic-bezier(.2, .8, .2, 1), stroke .3s, stroke-width .3s; }
+.pc-net circle[data-s] { opacity: 0; }
+
+.pc-card { position: absolute; width: 270px; display: flex; flex-direction: column; gap: 10px; padding: 10px 10px 16px; border-radius: 16px; border: 1px solid transparent; box-sizing: content-box;
+  background: linear-gradient(#070909, #070909) padding-box, linear-gradient(135deg, #1fc3c344, #d8b13a44) border-box;
+  transition: opacity .5s, transform .7s cubic-bezier(.2, .8, .2, 1), box-shadow .35s, background .35s; }
+.js .pc-pin .pc-card { opacity: 0; transform: translateY(60px); pointer-events: none; }
+.js .pc-pin .pc-card.past { transform: translateY(-60px); }
+.js .pc-pin .pc-card.on { opacity: 1; transform: none; pointer-events: auto; }
+.pc-stage.has-hover .pc-card.on { opacity: .4; }
+.pc-stage.has-hover .pc-card.on.hot { opacity: 1; box-shadow: 0 0 40px #1fc3c330; background: linear-gradient(#070909, #070909) padding-box, linear-gradient(135deg, var(--wi-teal), var(--wi-gold)) border-box; }
+.pc .pc-card:hover { color: var(--wi-ink); }
+.pc-card:focus-visible { outline: 1.5px solid var(--wi-ink); outline-offset: 4px; }
+.pc-thumb { height: 130px; border-radius: 10px; background: repeating-linear-gradient(135deg, #0e0e0e 0 6px, #161616 6px 12px) center / cover; }
+.pc-thumb.has-img { background-image: var(--pc-img); }
+.pc-card .t { font-family: var(--font-pc-serif); font-size: 24px; padding: 0 6px; }
+.pc-card .h { font-size: 13px; line-height: 1.5; color: var(--wi-mute); padding: 0 6px; }
+
+/* the site's custom cursor replaces the native one for mouse users */
+html.has-cursor .pc :is(a, button) { cursor: none; }
+
+/* one screen of scrolling for each page after the first; the pin stays put during it
+   (the design file used a negative margin here, which kept each pin on screen one screen too long) */
+.pc-spacer { height: 100vh; }
+
+/* simple fallback */
+.pc-list { display: none; }
+@media (max-width: 759px) {
+  .pc-pin, .pc-spacer { display: none; }
+  .pc-list { position: relative; z-index: var(--z-text); display: flex; flex-direction: column; gap: 20px; padding: 64px 24px; }
+  .pc-list h2 { font-family: var(--font-pc-serif); font-weight: 400; font-size: 56px; margin: 0 0 8px; letter-spacing: normal; }
+  .pc-list .pc-card { position: static; width: auto; }
+  .pc-list .pc-thumb { height: 180px; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .pc-card, .pc-net path, .pc-tick i, .pc-hint { transition: none; }
+  .pc-net circle[data-s] { display: none; }
+}

@@ -148,6 +148,7 @@ export async function createFish({ canvas, spots, avoid = [], model: modelData, 
     // the resting spot of whichever section is nearest the middle of the screen
     let rect = null, spot = null, best = Infinity;
     for (const el of spots) {
+      if (!el.offsetParent) continue; // inside something not displayed at this screen size
       const r = el.getBoundingClientRect();
       const d = Math.abs(r.top - H * 0.42);
       if (d < best) { best = d; rect = r; spot = el; }
@@ -162,7 +163,8 @@ export async function createFish({ canvas, spots, avoid = [], model: modelData, 
   }
 
   /* ---------- Staying off content ----------
-     Each [data-fish-avoid] element is a zone the fish must not rest in, grown by the fish's own
+     Each [data-fish-avoid] element is a zone the fish must not rest in (data-fish-avoid="shown":
+     only while it is visible, for cards that fade in and out), grown by the fish's own
      reach so that only a point needs testing. The place it is heading for is always moved out
      of a zone: beside it when there is room on screen, otherwise just above or below. The fish
      itself is free to pass through a zone on the way (such content is drawn in front of it). */
@@ -173,6 +175,7 @@ export async function createFish({ canvas, spots, avoid = [], model: modelData, 
     for (const el of avoid) {
       const r = el.getBoundingClientRect();
       if (r.bottom < -H || r.top > H * 2 || !r.width) continue; // nowhere near the screen
+      if (el.dataset.fishAvoid === 'shown' && Number(getComputedStyle(el).opacity) < 0.5) continue; // only while visible
       list.push({ left: r.left - grow, right: r.right + grow, top: r.top - grow, bottom: r.bottom + grow });
     }
     return list;

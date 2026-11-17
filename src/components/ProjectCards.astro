@@ -1,0 +1,89 @@
+---
+// Project cards: one pinned section per Work Index category (#ai, #design, #ml, #side).
+// Projects, hooks and categories come from src/data/work-index.js, in that file's order;
+// thumbnails and case-study links come from the projects collection.
+import '../styles/project-cards.css';
+import { getCollection } from 'astro:content';
+import manifest from '../data/images.json';
+import { CATEGORIES, PROJECTS } from '../data/work-index.js';
+import FishSpot from './FishSpot.astro';
+
+type Optimised = { widths: number[]; base: string };
+const entries = await getCollection('projects');
+const thumb = (image?: string) => {
+  const m = image ? (manifest as Record<string, Optimised>)[image] : undefined;
+  if (!m) return image ?? '';
+  const w = m.widths.find((x) => x >= 600) ?? m.widths.at(-1); // cards are 270px wide, so about 2x for sharp screens
+  return `${m.base}-${w}.webp`;
+};
+const cards = (id: string) => PROJECTS.filter((p) => p.cats.includes(id)).map((p) => {
+  const entry = entries.find((e) => e.slug === p.slug);
+  if (!entry) throw new Error(`work-index.js: no project with slug "${p.slug}" in src/content/projects`);
+  return { title: p.title, hook: p.hook, thumb: thumb(entry.data.image), href: `/projects/${entry.slug}` };
+});
+const categories = CATEGORIES.map((c) => ({ ...c, projects: cards(c.id) })).filter((c) => c.projects.length);
+
+// Layout of the 1280 x 800 stage, as designed: four card slots and the category's gold node.
+const SLOTS = [[520, 70], [880, 150], [560, 430], [920, 500]];
+const NODE = [240, 360];
+const paths = SLOTS.map(([x, y]) => `M${NODE[0]} ${NODE[1]} C 380 ${NODE[1]}, ${x - 140} ${y + 100}, ${x} ${y + 100}`);
+const pad = (v: number) => String(v).padStart(2, '0');
+---
+{categories.map((cat) => {
+  const P = cat.projects, pages = Math.ceil(P.length / 4);
+  return (
+    <section class="pc" id={cat.id} data-pc data-pages={pages} aria-labelledby={`pc-${cat.id}`}>
+      <div class="pc-pin">
+        <div class="pc-stage">
+          <h2 class="pc-title" id={`pc-${cat.id}`} data-fish-avoid>{cat.name}</h2>
+          <div class="pc-ticks">
+            {pages > 1 && Array.from({ length: pages }, (_, k) => (
+              <button type="button" class="pc-tick" data-k={k} data-snap><i></i>{pad(k * 4 + 1)}–{pad(Math.min(P.length, k * 4 + 4))}</button>
+            ))}
+          </div>
+          {pages > 1 && <div class="pc-hint" aria-hidden="true">SCROLL ↓</div>}
+          <span class="pc-spot"><FishSpot scale={0.5} /></span>
+          <svg class="pc-net" width="1280" height="800" aria-hidden="true">
+            {paths.map((d, s) => (
+              <>
+                <path d={d} data-s={s}></path>
+                <circle r="3" fill="#d8b13a" data-s={s}><animateMotion dur="2.4s" repeatCount="indefinite" begin={`-${s * 0.7}s`} path={d} /></circle>
+              </>
+            ))}
+            <circle cx={NODE[0]} cy={NODE[1]} r="5" fill="#d8b13a" />
+            <circle cx={NODE[0]} cy={NODE[1]} r="14" fill="none" stroke="#d8b13a55" />
+          </svg>
+          {P.map((p, i) => (
+            <a class="pc-card" href={p.href} data-i={i} data-fish-avoid="shown" data-cursor="grow"
+               style={`left:${SLOTS[i % 4][0]}px;top:${SLOTS[i % 4][1]}px`}>
+              <div class:list={['pc-thumb', { 'has-img': p.thumb }]} style={p.thumb ? `--pc-img:url('${p.thumb}')` : undefined}></div>
+              <div class="t">{p.title}</div><div class="h">{p.hook}</div>
+            </a>
+          ))}
+        </div>
+      </div>
+      {Array.from({ length: pages - 1 }, () => <div class="pc-spacer" aria-hidden="true"></div>)}
+      <div class="pc-list">
+        <h2>{cat.name}</h2>
+        <span class="pc-list-spot"><FishSpot scale={0.5} /></span>
+        {P.map((p) => (
+          <a class="pc-card" href={p.href} data-fish-avoid>
+            <div class:list={['pc-thumb', { 'has-img': p.thumb }]} style={p.thumb ? `--pc-img:url('${p.thumb}')` : undefined}></div>
+            <div class="t">{p.title}</div><div class="h">{p.hook}</div>
+          </a>
+        ))}
+      </div>
+    </section>
+  );
+})}
+
+<script>
+  import { initProjectCards } from '../scripts/project-cards.js';
+  initProjectCards(document.querySelectorAll('[data-pc]'));
+</script>
+
+<style>
+  /* where the fish rests while a category is pinned: the free space under the ticks */
+  .pc-spot { position: absolute; left: 0; top: 0; width: 1280px; height: 800px; --spot-x: 330px; --spot-y: 610px; pointer-events: none; }
+  .pc-list-spot { position: absolute; left: 0; top: 0; right: 0; height: 160px; --spot-x: 80%; --spot-y: 96px; pointer-events: none; }
+</style>
