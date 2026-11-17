@@ -129,7 +129,7 @@ html.has-cursor .pc :is(a, button, .pc-card) { cursor: none; }
   .pc-list { position: relative; z-index: var(--z-text); display: flex; flex-direction: column; gap: 20px; padding: 64px var(--gutter); } /* lines up with the site name in the nav */
   .pc-list h2 { font-weight: 500; text-wrap: nowrap; letter-spacing: -.035em; font-size: 56px; margin: 0 0 8px; font-family: var(--font-pc); line-height: 1; }
   .pc-list .pc-card { position: relative; width: auto; height: auto; }
-  .pc-list .pc-scroll { position: relative; inset: auto; background: #07090999; } /* see-through so the fish shows behind; no backdrop blur, which would recomposite every fish frame */
+  .pc-list .pc-scroll { position: relative; inset: auto; background: #070909d1; } /* see-through so the fish shows behind; no backdrop blur, which would recomposite every fish frame */
   .pc-list .pc-card.expanded .pc-edge { background: linear-gradient(120deg, var(--wi-teal), rgba(var(--wi-gold-rgb), .55) 55%, var(--wi-gold)); }
   .pc-list .pc-card.expanded { box-shadow: 0 0 40px #1fc3c330; }
   .pc-list .pc-thumb { height: 190px; }
