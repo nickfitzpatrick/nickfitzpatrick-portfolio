@@ -1,0 +1,49 @@
+---
+// A phrase that loops through a list, one at a time: "I build <research tools>".
+// Styled as italic display type in the betta's colours, with a hairline underline.
+//   - No JS or reduced motion: the first item is shown and nothing moves.
+//   - Screen readers get the whole list once, not a changing word.
+//   - Keep items short (about 24 characters): the line does not wrap, so nothing
+//     below it ever shifts when the phrase changes.
+interface Props { items: string[]; interval?: number }
+const { items, interval = 2600 } = Astro.props;
+---
+<span class="rotator" data-rotator data-interval={interval}>
+  <span class="visually-hidden">{items.join(', ')}</span>
+  <span class="rotator__window" aria-hidden="true">
+    {items.map((item, i) => <span class:list={['rotator__item', { 'is-current': i === 0 }]}>{item}</span>)}
+  </span>
+</span>
+
+<script>
+  import { initRotators } from '../scripts/rotator.js';
+  initRotators();
+</script>
+
+<style>
+  .rotator { white-space: nowrap; }
+  .rotator__window {
+    position: relative; display: inline-flex; overflow: clip; padding-bottom: 0.1em;
+    transition: width var(--dur-3) var(--ease-in-out);
+  }
+  .rotator__window.is-growing { transition-duration: var(--dur-1); transition-timing-function: var(--ease-out); } /* open up before a longer phrase arrives, so its end is never cut off */
+  .rotator__window::after { /* underline, sized to the current phrase */
+    content: ''; position: absolute; inset: auto 0 0 0; height: 1px;
+    background: var(--betta-gradient); opacity: 0.6;
+  }
+  .rotator__item {
+    font-family: var(--font-display); font-style: italic; font-weight: 400;
+    font-size: 1.14em; line-height: 1.3; letter-spacing: -0.01em;
+    padding-inline: 0.03em 0.14em; /* room for the italic overhang inside the clip */
+    color: var(--betta-teal);
+  }
+  @supports ((-webkit-background-clip: text) or (background-clip: text)) {
+    .rotator__item { background: var(--betta-gradient); -webkit-background-clip: text; background-clip: text; color: transparent; }
+  }
+  .rotator__item:not(.is-current) { position: absolute; left: 0; top: 0; opacity: 0; }
+  /* .is-live is added by the script on the first change, so nothing animates on page load */
+  .rotator.is-live .rotator__item.is-current { animation: rotator-in var(--dur-3) var(--ease-out) 120ms both; } /* arrives just after the old phrase starts to leave */
+  .rotator.is-live .rotator__item.is-leaving { animation: rotator-out var(--dur-2) var(--ease-in-out) both; }
+  @keyframes rotator-in { from { transform: translate3d(0, 105%, 0); opacity: 0; } }
+  @keyframes rotator-out { from { opacity: 1; } to { transform: translate3d(0, -105%, 0); opacity: 0; } }
+</style>

@@ -3,11 +3,22 @@
   "type": "module",
   "version": "0.0.1",
   "scripts": {
+    "predev": "node scripts/optimize-images.mjs",
     "dev": "astro dev",
+    "prebuild": "node scripts/optimize-images.mjs",
     "build": "astro build",
-    "preview": "astro preview"
+    "preview": "astro preview",
+    "images": "node scripts/optimize-images.mjs",
+    "models": "bash scripts/optimize-models.sh",
+    "sync:basis": "cp node_modules/three/examples/jsm/libs/basis/basis_transcoder.js node_modules/three/examples/jsm/libs/basis/basis_transcoder.wasm public/basis/"
   },
   "dependencies": {
-    "astro": "^4.0.0"
+    "@fontsource-variable/fraunces": "^5.3.0",
+    "@fontsource-variable/geist": "^5.3.0",
+    "astro": "^4.0.0",
+    "three": "^0.187.0"
+  },
+  "devDependencies": {
+    "sharp": "^0.35.5"
   }
 }

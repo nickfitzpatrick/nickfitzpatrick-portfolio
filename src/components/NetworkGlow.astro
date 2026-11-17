@@ -1,0 +1,16 @@
+---
+// Background for a section: a field of nodes that only shows near the cursor,
+// linked to their neighbours. Drop it inside any positioned section (it fills
+// its parent and sits behind the content). Decorative, so hidden from
+// assistive tech; without JS nothing is drawn.
+---
+<canvas class="network-glow" data-network-glow aria-hidden="true"></canvas>
+
+<script>
+  import { initNetworkGlow } from '../scripts/network-glow.js';
+  document.querySelectorAll('[data-network-glow]').forEach((canvas) => initNetworkGlow(canvas));
+</script>
+
+<style>
+  .network-glow { position: absolute; inset: 0; width: 100%; height: 100%; z-index: var(--z-ambient); pointer-events: none; }
+</style>

@@ -1,0 +1,21 @@
+---
+// Custom cursor for mouse users: a dot that follows exactly and a ring that
+// snaps to [data-snap] targets and opens up over [data-cursor="grow"].
+// Touch and keyboard users never see it; they get native focus/active states.
+---
+<div class="cursor" aria-hidden="true"><div class="cursor__ring"></div><div class="cursor__dot"></div></div>
+
+<script>
+  import { initCursor } from '../scripts/cursor.js';
+  initCursor(document.querySelector('.cursor'));
+</script>
+
+<style>
+  .cursor { position: fixed; inset: 0 auto auto 0; z-index: var(--z-cursor); pointer-events: none; mix-blend-mode: difference; opacity: 0; transition: opacity var(--dur-2) var(--ease-soft); }
+  .cursor.is-on { opacity: 1; }
+  .cursor__dot { position: fixed; left: -3px; top: -3px; width: 6px; height: 6px; border-radius: 50%; background: #fff; will-change: translate; transition: scale var(--dur-1) var(--ease-out), opacity var(--dur-1) var(--ease-soft); }
+  .cursor__ring { position: fixed; left: 0; top: 0; width: 34px; height: 34px; border: 1px solid rgba(255, 255, 255, 0.75); border-radius: 99px; transition: border-color var(--dur-1) var(--ease-soft); }
+  .cursor.is-down .cursor__dot { scale: 1.8; }
+  .cursor.is-grown .cursor__dot { opacity: 0; }
+  :global(.has-cursor), :global(.has-cursor a), :global(.has-cursor button) { cursor: none; }
+</style>

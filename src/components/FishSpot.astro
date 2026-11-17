@@ -1,0 +1,25 @@
+---
+// A point the fish swims to and rests near while its section is in view.
+// The parent positions it with --spot-x / --spot-y. `loader` shows a small
+// bubble here until the fish has loaded. `scale` below 1 makes the fish
+// smaller at this spot, as if it had swum further away.
+interface Props { loader?: boolean; scale?: number }
+const { loader = false, scale = 1 } = Astro.props;
+---
+<span class="fish-spot" data-fish-spot data-fish-scale={scale} aria-hidden="true">{loader && <span class="fish-spot__loader"></span>}</span>
+
+<style>
+  .fish-spot { position: absolute; left: var(--spot-x, 50%); top: var(--spot-y, 50%); width: 0; height: 0; z-index: var(--z-fish); pointer-events: none; }
+  .fish-spot__loader {
+    position: absolute; left: -0.5rem; top: -0.5rem; width: 1rem; height: 1rem; border-radius: 50%;
+    border: 1px solid var(--ink-2);
+    background: radial-gradient(circle at 32% 30%, rgba(255, 255, 255, 0.6) 0, rgba(255, 255, 255, 0) 42%);
+    opacity: 0; transition: opacity var(--dur-3) var(--ease-soft);
+    animation: spot-bob 1.9s var(--ease-in-out) infinite alternate;
+  }
+  :global(html[data-fish='loading']) .fish-spot__loader { opacity: 0.7; transition-delay: 400ms; } /* quick loads never flash it */
+  @keyframes spot-bob {
+    from { transform: translate3d(0, 0.3rem, 0) scale(0.86); }
+    to { transform: translate3d(0, -0.3rem, 0) scale(1.08); }
+  }
+</style>
