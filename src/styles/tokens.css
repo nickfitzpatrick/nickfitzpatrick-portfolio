@@ -17,6 +17,19 @@
   --net-line: #7fd8cc;
   --net-node: #f4f2ec;
   --net-node-alt: #d8b13a;
+  /* Work Index section: kept exactly as designed, so it has its own palette and faces */
+  --wi-ink: #f4f2ec;
+  --wi-mute: #a8a6a0;
+  --wi-dim: #7a7a76;
+  --wi-teal: #1fc3c3;
+  --wi-gold: #d8b13a;
+  --wi-line: #222;
+  --wi-teal-rgb: 31, 195, 195;
+  --wi-wire-rgb: 127, 216, 204;  /* lines on the canvas, soft teal */
+  --wi-gold-rgb: 216, 177, 58;
+  --wi-ink-rgb: 244, 242, 236;
+  --font-wi: 'Instrument Sans', sans-serif;
+  --font-wi-mono: 'JetBrains Mono', monospace;
   --betta-gradient: linear-gradient(90deg, var(--betta-teal) 0%, var(--betta-green) 42%, var(--betta-amber) 100%);
 
   /* Type: one display face, one body face */
