@@ -173,6 +173,7 @@ export async function createFish({ canvas, spots, avoid = [], model: modelData, 
   function zones() {
     const grow = reach(), list = [];
     for (const el of avoid) {
+      if (el.dataset.fishAvoid === undefined) continue; // flag dropped for now (an open case study: the fish swims behind it)
       const r = el.getBoundingClientRect();
       if (r.bottom < -H || r.top > H * 2 || !r.width) continue; // nowhere near the screen
       if (el.dataset.fishAvoid === 'shown' && Number(getComputedStyle(el).opacity) < 0.5) continue; // only while visible
