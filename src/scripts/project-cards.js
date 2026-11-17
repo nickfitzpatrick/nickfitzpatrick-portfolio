@@ -81,10 +81,13 @@ export function initProjectCards(sectionEls) {
   function place(el, i) { const [x, y] = SLOTS[i % 4]; Object.assign(el.style, { left: x + 'px', top: y + 'px', width: '270px', height: '252px' }); }
 
   function fit(st) {
+    // Fills the space under the nav: a small gap below the nav bar, a matching one at the bottom.
     const el = st.cards[st.open], r = st.stage.getBoundingClientRect();
+    const nav = document.querySelector('.nav'), gap = 16;
+    const top = (nav ? nav.getBoundingClientRect().bottom : 0) + gap, bottom = innerHeight - gap * 1.5;
     Object.assign(el.style, {
-      left: (innerWidth * 0.1 - r.left) / scale + 'px', top: (innerHeight * 0.1 - r.top) / scale + 'px',
-      width: (innerWidth * 0.8) / scale + 'px', height: (innerHeight * 0.8) / scale + 'px',
+      left: (innerWidth * 0.1 - r.left) / scale + 'px', top: (top - r.top) / scale + 'px',
+      width: (innerWidth * 0.8) / scale + 'px', height: (bottom - top) / scale + 'px',
     });
   }
 
@@ -97,13 +100,17 @@ export function initProjectCards(sectionEls) {
   }
 
   function openCard(st, i) {
-    if (st.open >= 0) shut(st);
+    const wasOpen = st.open >= 0;
+    if (wasOpen) shut(st);
     st.open = i; st.hot = -1;
     const el = st.cards[i];
     el.querySelector('.pc-scroll').scrollTop = 0; el.querySelector('.pc-prog i').style.width = '0%';
     el.classList.add('open'); st.stage.classList.add('is-open');
     delete el.dataset.cursor; // the cursor ring stays small inside the open case study
     document.documentElement.style.overflow = 'hidden';
+    document.documentElement.classList.add('pc-open'); // hides the nav's fade so it doesn't dim the card's top
+    // The fish stays where it is, behind the open card, instead of being pushed out from under the cards.
+    if (!wasOpen) st.cards.forEach((c) => { c.dataset.fishAvoidWas = c.dataset.fishAvoid ?? ''; delete c.dataset.fishAvoid; });
     fit(st); paint(st);
     el.querySelector('.pc-x').focus({ preventScroll: true });
   }
@@ -114,6 +121,8 @@ export function initProjectCards(sectionEls) {
     shut(st); st.open = -1;
     st.stage.classList.remove('is-open');
     document.documentElement.style.overflow = '';
+    document.documentElement.classList.remove('pc-open');
+    st.cards.forEach((c) => { c.dataset.fishAvoid = c.dataset.fishAvoidWas; delete c.dataset.fishAvoidWas; });
     paint(st);
     el.focus({ preventScroll: true });
   }
