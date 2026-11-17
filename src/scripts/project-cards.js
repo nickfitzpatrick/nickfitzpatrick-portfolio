@@ -58,7 +58,12 @@ export function initProjectCards(sectionEls) {
     const listCards = [...sec.querySelectorAll('.pc-list .pc-card')];
     listCards.forEach((el, i) => {
       el.setAttribute('aria-expanded', 'false');
-      const toggle = (on) => { el.classList.toggle('expanded', on); el.setAttribute('aria-expanded', String(on)); };
+      const toggle = (on) => {
+        el.classList.toggle('expanded', on); el.setAttribute('aria-expanded', String(on));
+        // collapsing a card the reader has scrolled into would leave them several cards further down; bring its top back into view
+        const top = el.getBoundingClientRect().top;
+        if (!on && top < 0) window.scrollTo({ top: top + scrollY - 72, behavior: 'instant' });
+      };
       el.addEventListener('click', (e) => { if (!e.target.closest('.pc-next, a, video')) toggle(!el.classList.contains('expanded')); });
       el.addEventListener('keydown', (e) => { if ((e.key === 'Enter' || e.key === ' ') && e.target === el) { e.preventDefault(); toggle(!el.classList.contains('expanded')); } });
       const nx = el.querySelector('.pc-next');
