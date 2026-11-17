@@ -10,6 +10,7 @@ import { reducedMotion } from './env.js';
 const SLOTS = [[520, 70], [880, 150], [560, 430], [920, 500]];
 const NODE_GAP = 30;      // stage px from the end of the title to the centre of the node
 const NODE_HEIGHT = 0.52; // the node sits this far down the title's last line (as designed: 50 of 96 px)
+const TEXT_BOTTOM = 252 - 16; // closed card: text stops this far down (card height less a 16px buffer)
 
 export function initProjectCards(sectionEls) {
   const reduced = reducedMotion();
@@ -228,13 +229,26 @@ export function initProjectCards(sectionEls) {
     }
   }
 
+  // Closed cards are a fixed height, so a long title leaves less room for the hook: show only the
+  // hook lines that fit above the buffer (measured once fonts are in, since line widths change).
+  function fitHooks(st) {
+    st.cards.forEach((el) => {
+      if (el.classList.contains('open')) return;
+      const t = el.querySelector('.pc-t'), h = el.querySelector('.pc-h');
+      const line = parseFloat(getComputedStyle(h).lineHeight) || 19.5;
+      const room = TEXT_BOTTOM - (t.offsetTop + t.offsetHeight + 8); // offsets within the card's scroll box; 8: title-to-hook gap
+      const n = Math.max(0, Math.floor(room / line));
+      h.style.setProperty('--pc-lines', n); h.dataset.lines = n;
+    });
+  }
+
   let queued = false, relayout = true, lastScale = 0;
   function update() {
     queued = false;
     scale = Math.min(innerWidth / 1280, innerHeight / 800, 1.25);
     const rescale = scale !== lastScale || relayout; lastScale = scale; relayout = false;
     sections.forEach((st) => {
-      if (rescale) { st.stage.style.transform = `scale(${scale})`; placeTitle(st); }
+      if (rescale) { st.stage.style.transform = `scale(${scale})`; placeTitle(st); fitHooks(st); }
       if (st.open >= 0) { fit(st); return; }
       const top = st.sec.getBoundingClientRect().top;
       const cur = Math.max(0, Math.min(st.pages - 1, Math.round(-top / innerHeight)));
