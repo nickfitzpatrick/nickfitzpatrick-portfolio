@@ -23,10 +23,13 @@ export function initFish(root) {
   const small = smallScreen() || !finePointer() || navigator.connection?.saveData === true;
   const start = async () => {
     try {
+      // Download the model while three.js loads, rather than one after the other.
+      const url = small ? MODELS.small : MODELS.large;
+      const model = fetch(url).then((r) => { if (!r.ok) throw new Error(`${url}: ${r.status}`); return r.arrayBuffer(); });
+      model.catch(() => {}); // a failure is reported below, once createFish awaits it
       const { createFish } = await import('./scene.js');
       await createFish({
-        canvas, spots, avoid,
-        url: small ? MODELS.small : MODELS.large,
+        canvas, spots, avoid, model,
         reduced: reducedMotion(),
         fine: finePointer(),
       });
@@ -36,8 +39,7 @@ export function initFish(root) {
       setState('off');
     }
   };
-  // After the page has loaded, and only when the browser is idle.
-  const whenIdle = () => ('requestIdleCallback' in window ? requestIdleCallback(start, { timeout: 2500 }) : setTimeout(start, 300));
-  if (document.readyState === 'complete') whenIdle();
-  else addEventListener('load', whenIdle, { once: true });
+  // Straight after the page has loaded, so it never competes with the page's own content.
+  if (document.readyState === 'complete') start();
+  else addEventListener('load', start, { once: true });
 }
