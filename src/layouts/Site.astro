@@ -46,6 +46,10 @@ const ogImage = new URL(image, Astro.site);
   <meta name="twitter:card" content="summary_large_image" />
   <link rel="preload" href={frauncesUrl} as="font" type="font/woff2" crossorigin />
   <link rel="preload" href={geistUrl} as="font" type="font/woff2" crossorigin />
+  <!-- Switzer (project cards, footer): non-blocking until self-hosted -->
+  <link rel="preconnect" href="https://api.fontshare.com" crossorigin />
+  <link rel="preconnect" href="https://cdn.fontshare.com" crossorigin />
+  <link rel="stylesheet" href="https://api.fontshare.com/v2/css?f[]=switzer@400,500,600&display=swap" media="print" onload="this.media='all'" />
   <slot name="head" />
   <script is:inline>document.documentElement.classList.add('js');</script>
 </head>

@@ -1,5 +1,6 @@
 ---
-// Footer: contact links and credits. The fish credit is required by its CC BY licence.
+// Footer: seagrass swaying above the contact links and credits.
+// The fish credit is required by its CC BY licence.
 const links = [
   { href: 'https://github.com/nickfitzpatrick', label: 'GitHub' },
   { href: 'https://www.linkedin.com/in/n-fitzpatrick', label: 'LinkedIn' },
@@ -7,26 +8,42 @@ const links = [
 ];
 ---
 <footer class="footer">
-  <div class="footer__inner">
-    <ul class="footer__links">
-      {links.map((l) => <li><a class="link" href={l.href} data-snap>{l.label}</a></li>)}
-    </ul>
+  <canvas class="footer__grass" aria-hidden="true"></canvas>
+  <div class="footer__row">
+    <nav class="footer__links" aria-label="Contact">
+      {links.map((l) => <a href={l.href} data-snap>{l.label}</a>)}
+    </nav>
     <p class="footer__credit">
-      Fish: <a class="link" href="https://sketchfab.com/3d-models/betta-splendens-f4eeb7f50ad24873842bd954ad27d23b" data-snap>Betta Splendens</a>
-      by <a class="link" href="https://sketchfab.com/VapTor" data-snap>BlueMesh</a>,
-      <a class="link" href="https://creativecommons.org/licenses/by/4.0/" rel="license" data-snap>CC BY 4.0</a>. Textures and mesh compressed for the web.
+      Fish: <a href="https://sketchfab.com/3d-models/betta-splendens-f4eeb7f50ad24873842bd954ad27d23b" data-snap>Betta Splendens</a>
+      by <a href="https://sketchfab.com/VapTor" data-snap>BlueMesh</a>,
+      <a href="https://creativecommons.org/licenses/by/4.0/" rel="license" data-snap>CC BY 4.0</a>. Textures and mesh compressed for the web.
     </p>
   </div>
 </footer>
 
+<script>
+  import { initSeagrass } from '../scripts/seagrass.js';
+  const c = document.querySelector('.footer__grass');
+  if (c) initSeagrass(c);
+</script>
+
 <style>
-  .footer { position: relative; z-index: var(--z-text); padding: var(--space-6) var(--gutter) var(--space-5); border-top: 1px solid var(--line); }
-  .footer__inner { max-width: var(--max); margin-inline: auto; display: flex; flex-wrap: wrap; gap: var(--space-4) var(--space-6); justify-content: space-between; align-items: baseline; }
-  .footer__links { display: flex; gap: var(--space-4); font-size: var(--step-0); }
-  .footer__credit { font-size: var(--step--1); color: var(--ink-3); max-width: var(--measure); }
-  .footer__credit .link { color: var(--ink-2); background-size: 100% 1px; background-image: linear-gradient(var(--ink-3), var(--ink-3)); }
-  .footer__credit .link:hover, .footer__credit .link:focus-visible { color: var(--ink); background-image: linear-gradient(currentColor, currentColor); }
+  .footer { position: relative; z-index: var(--z-text); overflow: hidden; padding-top: 340px; border-top: 1px solid var(--line);
+    font-family: var(--font-pc); -webkit-font-smoothing: antialiased; }
+  .footer__grass { position: absolute; inset: 0 0 auto 0; width: 100%; height: 350px; display: block;
+    -webkit-mask-image: linear-gradient(to bottom, #000 45%, transparent); mask-image: linear-gradient(to bottom, #000 45%, transparent); }
+  .footer__row { position: relative; display: flex; justify-content: space-between; align-items: flex-start; gap: 48px; padding: 22px var(--gutter) 64px; }
+  .footer a { color: var(--wi-ink); transition: color var(--dur-1) var(--ease-soft); }
+  .footer a:hover, .footer a:focus-visible { color: var(--wi-teal); }
+  .footer__links { display: flex; gap: 22px; font-size: 17px; }
+  .footer__credit { margin: 0; max-width: 470px; font-size: 13px; line-height: 1.6; color: var(--wi-mute); }
+  .footer__credit a { border-bottom: 1px solid var(--wi-mute); }
+  @media (max-width: 640px) {
+    .footer { padding-top: 240px; }
+    .footer__grass { height: 250px; }
+    .footer__row { flex-direction: column; gap: 24px; padding: 16px var(--gutter) 48px; }
+  }
   @media (max-width: 45em) {
-    .footer { padding-bottom: calc(var(--space-7) + env(safe-area-inset-bottom)); } /* clears the bottom nav */
+    .footer__row { padding-bottom: calc(var(--space-7) + env(safe-area-inset-bottom)); } /* clears the bottom nav */
   }
 </style>
