@@ -56,10 +56,16 @@ export function initProjectCards(sectionEls) {
 
     // small screens: tap to expand inline
     const listCards = [...sec.querySelectorAll('.pc-list .pc-card')];
+    // while any card is open it fills the screen, so the fish swims behind the cards instead of leaving
+    const syncFish = () => {
+      const anyOpen = listCards.some((c) => c.classList.contains('expanded'));
+      listCards.forEach((c) => { if (anyOpen) delete c.dataset.fishAvoid; else c.dataset.fishAvoid = ''; });
+    };
     listCards.forEach((el, i) => {
       el.setAttribute('aria-expanded', 'false');
       const toggle = (on) => {
         el.classList.toggle('expanded', on); el.setAttribute('aria-expanded', String(on));
+        syncFish();
         // collapsing a card the reader has scrolled into would leave them several cards further down; bring its top back into view
         const top = el.getBoundingClientRect().top;
         if (!on && top < 0) window.scrollTo({ top: top + scrollY - 72, behavior: 'instant' });
@@ -70,7 +76,7 @@ export function initProjectCards(sectionEls) {
       if (nx) nx.addEventListener('click', (e) => {
         e.stopPropagation(); toggle(false);
         const to = listCards[(i + 1) % listCards.length];
-        to.classList.add('expanded'); to.setAttribute('aria-expanded', 'true');
+        to.classList.add('expanded'); to.setAttribute('aria-expanded', 'true'); syncFish();
         window.scrollTo({ top: to.getBoundingClientRect().top + scrollY - 20, behavior: reduced ? 'auto' : 'smooth' });
       });
     });
