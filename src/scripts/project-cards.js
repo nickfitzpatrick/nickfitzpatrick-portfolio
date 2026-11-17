@@ -24,9 +24,9 @@ export function initProjectCards(sectionEls) {
       place(el, i);
       el.addEventListener('mouseenter', () => { if (st.open < 0) { st.hot = i; paint(st); } });
       el.addEventListener('mouseleave', () => { if (st.open < 0) { st.hot = -1; paint(st); } el.style.setProperty('--tx', 0); el.style.setProperty('--ty', 0); });
-      el.addEventListener('click', (e) => { if (st.open < 0) { e.stopPropagation(); openCard(st, i); } });
+      el.addEventListener('click', (e) => { if (st.open < 0) { e.stopPropagation(); settleThenOpen(st, i); } });
       el.addEventListener('keydown', (e) => {
-        if ((e.key === 'Enter' || e.key === ' ') && e.target === el && st.open < 0) { e.preventDefault(); openCard(st, i); }
+        if ((e.key === 'Enter' || e.key === ' ') && e.target === el && st.open < 0) { e.preventDefault(); settleThenOpen(st, i); }
       });
       el.addEventListener('focus', () => { // a keyboard user tabbing to a card on another page: go there
         if (st.open >= 0) return;
@@ -40,7 +40,6 @@ export function initProjectCards(sectionEls) {
         const r = el.getBoundingClientRect(), x = (e.clientX - r.left) / r.width, y = (e.clientY - r.top) / r.height;
         el.style.setProperty('--tx', ((x - 0.5) * 2).toFixed(3)); el.style.setProperty('--ty', ((y - 0.5) * 2).toFixed(3));
         el.style.setProperty('--mx', x * 100 + '%'); el.style.setProperty('--my', y * 100 + '%');
-        el.querySelector('.pc-thumb').style.backgroundPosition = `${-(x - 0.5) * 20}px ${-(y - 0.5) * 12}px`;
       });
       const sc = el.querySelector('.pc-scroll');
       sc.addEventListener('scroll', () => {
@@ -81,29 +80,47 @@ export function initProjectCards(sectionEls) {
   function place(el, i) { const [x, y] = SLOTS[i % 4]; Object.assign(el.style, { left: x + 'px', top: y + 'px', width: '270px', height: '252px' }); }
 
   function fit(st) {
+    // Fills the space under the nav: a small gap below the nav bar, a matching one at the bottom.
     const el = st.cards[st.open], r = st.stage.getBoundingClientRect();
+    const nav = document.querySelector('.nav'), gap = 16;
+    const top = (nav ? nav.getBoundingClientRect().bottom : 0) + gap, bottom = innerHeight - gap * 1.5;
     Object.assign(el.style, {
-      left: (innerWidth * 0.1 - r.left) / scale + 'px', top: (innerHeight * 0.1 - r.top) / scale + 'px',
-      width: (innerWidth * 0.8) / scale + 'px', height: (innerHeight * 0.8) / scale + 'px',
+      left: (innerWidth * 0.1 - r.left) / scale + 'px', top: (top - r.top) / scale + 'px',
+      width: (innerWidth * 0.8) / scale + 'px', height: (bottom - top) / scale + 'px',
     });
   }
 
   function shut(st) { // undo the open state of the current card, without touching anything else
     const el = st.cards[st.open];
     el.classList.remove('open', 'scrolled');
-    el.querySelector('.pc-thumb').style.backgroundPosition = '';
     el.dataset.cursor = 'grow';
     place(el, st.open);
   }
 
+  // If the section is only partly on screen (the pin isn't stuck to the top yet, or is leaving),
+  // scroll it flush first; otherwise the pin's clipping cuts the open card in half.
+  function settleThenOpen(st, i) {
+    const off = st.sec.querySelector('.pc-pin').getBoundingClientRect().top;
+    if (Math.abs(off) < 2) return openCard(st, i);
+    let done = false;
+    const go = () => { if (done) return; done = true; removeEventListener('scrollend', go); openCard(st, i); };
+    addEventListener('scrollend', go, { once: true });
+    setTimeout(go, reduced ? 50 : 700); // browsers without scrollend
+    scrollBy({ top: off, behavior: reduced ? 'auto' : 'smooth' });
+  }
+
   function openCard(st, i) {
-    if (st.open >= 0) shut(st);
+    const wasOpen = st.open >= 0;
+    if (wasOpen) shut(st);
     st.open = i; st.hot = -1;
     const el = st.cards[i];
     el.querySelector('.pc-scroll').scrollTop = 0; el.querySelector('.pc-prog i').style.width = '0%';
     el.classList.add('open'); st.stage.classList.add('is-open');
     delete el.dataset.cursor; // the cursor ring stays small inside the open case study
     document.documentElement.style.overflow = 'hidden';
+    document.documentElement.classList.add('pc-open'); // hides the nav's fade so it doesn't dim the card's top
+    // The fish stays where it is, behind the open card, instead of being pushed out from under the cards.
+    if (!wasOpen) st.cards.forEach((c) => { c.dataset.fishAvoidWas = c.dataset.fishAvoid ?? ''; delete c.dataset.fishAvoid; });
     fit(st); paint(st);
     el.querySelector('.pc-x').focus({ preventScroll: true });
   }
@@ -114,6 +131,8 @@ export function initProjectCards(sectionEls) {
     shut(st); st.open = -1;
     st.stage.classList.remove('is-open');
     document.documentElement.style.overflow = '';
+    document.documentElement.classList.remove('pc-open');
+    st.cards.forEach((c) => { c.dataset.fishAvoid = c.dataset.fishAvoidWas; delete c.dataset.fishAvoidWas; });
     paint(st);
     el.focus({ preventScroll: true });
   }
