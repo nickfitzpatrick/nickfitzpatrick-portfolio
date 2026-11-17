@@ -18,6 +18,5 @@
     opacity: 0; transition: opacity var(--dur-slow) var(--ease-soft); will-change: transform;
   }
   :global(html[data-fish='ready']) .fish__canvas { opacity: 1; }
-  :global(html[data-fish='ready']) .fish__canvas.is-away { opacity: 0; transition-duration: var(--dur-1); } /* slips out of sight when a card scrolls onto it */
   .fish__canvas.is-still { left: calc(var(--fish-size) / -2); top: calc(var(--fish-size) / -2); will-change: auto; } /* reduced motion: parked in the hero */
 </style>

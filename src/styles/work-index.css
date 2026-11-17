@@ -5,14 +5,15 @@
   - Network view: categories are hubs; each project is a dot wired to every category it belongs
     to (multi-category projects sit between hubs and glow gold). Gold pulses travel along lines.
     Hover a hub: its projects light up. Hover a dot: small card with thumbnail + hook.
-  - Simple view (toggle, top-right): hubs glide into a row; click one to list its projects.
+  - List view (toggle, top-right; "simple" in the code): hubs glide into a row; click one to list its projects.
+  Everything here is layered above the fish (z-index 2 and later in the page), so the fish passes behind it.
 */
 .wi { position: relative; height: 780px; overflow: hidden; color: var(--wi-ink); font-family: var(--font-wi); font-size: 16px; line-height: normal; }
 .wi a { color: var(--wi-ink); text-decoration: none; }
-.wi canvas { position: absolute; inset: 0; width: 100%; height: 100%; transition: opacity .6s, transform .8s cubic-bezier(.65, 0, .25, 1); }
+.wi canvas { position: absolute; inset: 0; z-index: 2; width: 100%; height: 100%; transition: opacity .6s, transform .8s cubic-bezier(.65, 0, .25, 1); }
 .wi.simple canvas { opacity: 0; transform: scale(.94); }
-.wi-label { position: absolute; top: 40px; left: 48px; font: 400 12px var(--font-wi-mono); letter-spacing: .1em; color: var(--wi-dim); }
-.wi-keepout { position: absolute; inset: 0 13.5%; pointer-events: none; } /* the fish stays out of this box, so it can only swim the edges */
+.wi-label { position: absolute; z-index: 2; top: 40px; left: 48px; font: 400 12px var(--font-wi-mono); letter-spacing: .1em; color: var(--wi-dim); }
+.wi-keepout { position: absolute; inset: 0 13.5%; pointer-events: none; } /* the fish does not rest inside this box: it settles in the side margins */
 
 /* gradient edge, reused */
 .wi-edge { position: absolute; inset: 0; border-radius: inherit; padding: 1px; pointer-events: none;

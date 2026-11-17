@@ -1,5 +1,5 @@
 ---
-// Work Index: network of category hubs and project dots, with a Simple list view.
+// Work Index: network of category hubs and project dots, with a list view ("List" in the toggle; called simple in the code).
 // Content: src/data/work-index.js. Thumbnails and case-study links come from the projects collection.
 import '../styles/work-index.css';
 import { getCollection } from 'astro:content';
@@ -30,7 +30,7 @@ const projects = PROJECTS.map((p) => {
   <div class="wi-toggle" role="group" aria-label="Work index view" data-fish-avoid>
     <span class="wi-edge"></span>
     <button type="button" class="on" data-mode="network" aria-pressed="true" data-snap>Network</button>
-    <button type="button" data-mode="simple" aria-pressed="false" data-snap>Simple</button>
+    <button type="button" data-mode="simple" aria-pressed="false" data-snap>List</button>
   </div>
   <div class="wi-card wi-glass" aria-hidden="true"><span class="wi-edge"></span><div class="wi-thumb"></div><div class="t"></div><div class="h"></div></div>
   <div class="wi-list"><div class="wi-list-inner"></div></div>
