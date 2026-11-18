@@ -18,6 +18,7 @@ export const PROJECTS = [
   { slug: 'raid', title: 'RAID', hook: 'Teaches a robot arm new moves from 25 demonstrations by looking up similar past examples.', cats: ['ml'] },
   { slug: 'sketchboard', title: 'Sketchboard', hook: 'Turns a hand-drawn sketch and a spoken note into an app mockup on iPad.', cats: ['ai', 'design', 'side'] },
   { slug: 'emilys-sales-log', title: "Emily's Sales Log Automation", hook: 'Turns a month of handwritten sales logs into vendor billing, with the owner reviewing before anyone is billed.', cats: ['ai', 'side'] },
+  { slug: 'hermes-lab', title: 'Hermes Multi-Agent Lab', hook: 'An always-on agent server where AI-written code merges only after a second model reviews it and the checks pass.', cats: ['ai', 'side'] },
   { slug: 'emergency-response', title: 'Emergency Response Allocation', hook: 'Shows where California should put emergency response centers, and when crash risk peaks.', cats: ['ml'] },
   { slug: 'water-quality', title: 'Water Quality Violations', hook: 'Predicts which California water systems will break contamination limits before it happens.', cats: ['ml'] },
   { slug: 'bizgrow-churn', title: 'BizGrow Customer Churn', hook: 'Traced a spike in lost customers to one oversold feature, with $29M in contracts at risk.', cats: ['ml'] },
