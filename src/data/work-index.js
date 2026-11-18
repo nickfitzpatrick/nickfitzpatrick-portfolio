@@ -26,7 +26,7 @@ export const PROJECTS = [
   { slug: 'emergency-response', title: 'Emergency Response Allocation', hook: 'Shows where California should put emergency response centers, and when crash risk peaks.', cats: ['optimization', 'ml'] },
   { slug: 'water-quality', title: 'Water Quality Violations', hook: 'Predicts which California water systems will break contamination limits before it happens.', cats: ['ml'] },
   { slug: 'bizgrow-churn', title: 'BizGrow Customer Churn', hook: 'Traced a spike in lost customers to one oversold feature, with $29M in contracts at risk.', cats: ['data'] },
-  { slug: 'ieor-visit-day', title: 'IEOR Visit Day Scheduler', hook: 'Builds every visiting student a two-day schedule of faculty meetings from their preferences.', cats: ['ml', 'design'] },
+  { slug: 'ieor-visit-day', title: 'IEOR Visit Day Scheduler', hook: 'Builds every visiting student a two-day schedule of faculty meetings from their preferences.', cats: ['optimization', 'design'] },
   { slug: 'mars-power', title: 'Powering Mars Colonies', hook: 'Compares solar, fission and fusion for powering Mars colonies of 6 to 2,000 people.', cats: ['optimization', 'data'] },
   { slug: 'voyla-database', title: 'Voyla! Database Design', hook: 'The full data stack behind a travel app: transactions, warehouse and analytics dashboard.', cats: ['data'] },
 ];
