@@ -8,12 +8,13 @@
 //             `cats` lists category ids. Two or more = the dot sits between hubs and glows gold.
 export const CATEGORIES = [
   // Array order = order of the category sections down the page; `pos` only places the hub.
-  { name: 'AI', id: 'ai', pos: [0.20, 0.25] },
-  { name: 'Design', id: 'design', pos: [0.80, 0.25] },
-  { name: 'Machine Learning', id: 'ml', pos: [0.24, 0.74] },
-  { name: 'Data', id: 'data', pos: [0.80, 0.76] },
-  { name: 'Optimization', id: 'optimization', pos: [0.54, 0.62] },
-  { name: 'Product', id: 'product', pos: [0.50, 0.15] },
+  // Hubs sit on an oval (centre 0.5, 0.5; radius 0.36 each way): top row AI, Product, Design.
+  { name: 'AI', id: 'ai', pos: [0.19, 0.32] },
+  { name: 'Design', id: 'design', pos: [0.81, 0.32] },
+  { name: 'Machine Learning', id: 'ml', pos: [0.19, 0.68] },
+  { name: 'Data', id: 'data', pos: [0.81, 0.68] },
+  { name: 'Optimization', id: 'optimization', pos: [0.50, 0.86] },
+  { name: 'Product', id: 'product', pos: [0.50, 0.14] },
 ];
 
 // The first category in `cats` is the project's home: clicking its dot opens it in that section.
