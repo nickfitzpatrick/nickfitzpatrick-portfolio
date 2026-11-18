@@ -12,7 +12,9 @@
 .wi a { color: var(--wi-ink); text-decoration: none; }
 .wi canvas { position: absolute; inset: 0; z-index: 2; width: 100%; height: 100%; transition: opacity .6s, transform .8s cubic-bezier(.65, 0, .25, 1); }
 .wi.simple canvas { opacity: 0; transform: scale(.94); }
-.wi-label { position: absolute; z-index: 2; top: 40px; left: 48px; font: 400 12px var(--font-wi-mono); letter-spacing: .1em; color: var(--wi-dim); }
+.wi-label { position: absolute; z-index: 2; top: 40px; left: max(48px, calc((100% - var(--max)) / 2)); font: 400 12px var(--font-wi-mono); letter-spacing: .1em; color: var(--wi-dim); }
+/* the network is laid out in this centred frame, so it keeps its shape on wide screens */
+.wi-frame { position: absolute; top: 0; bottom: 0; left: 0; right: 0; width: min(100%, var(--max)); margin-inline: auto; pointer-events: none; }
 .wi-keepout { position: absolute; inset: 0 13.5%; pointer-events: none; } /* the fish does not rest inside this box: it settles in the side margins */
 
 /* gradient edge, reused */
@@ -23,7 +25,7 @@
   -webkit-backdrop-filter: blur(6px); backdrop-filter: blur(6px); box-shadow: inset 0 1px 0 rgba(255, 255, 255, .10); }
 
 /* toggle */
-.wi-toggle { position: absolute; top: 30px; right: 48px; z-index: 3; display: flex; gap: 2px; padding: 3px; border-radius: 999px; background: rgba(255, 255, 255, .04); box-shadow: inset 0 1px 0 rgba(255, 255, 255, .08); }
+.wi-toggle { position: absolute; top: 30px; right: max(48px, calc((100% - var(--max)) / 2)); z-index: 3; display: flex; gap: 2px; padding: 3px; border-radius: 999px; background: rgba(255, 255, 255, .04); box-shadow: inset 0 1px 0 rgba(255, 255, 255, .08); }
 .wi-toggle .wi-edge { opacity: .5; }
 .wi-toggle button { all: unset; cursor: pointer; padding: 7px 14px; border-radius: 999px; font-size: 13px; color: var(--wi-dim); transition: background .2s, color .2s; }
 .wi-toggle button.on { color: var(--wi-ink); background: linear-gradient(120deg, rgba(var(--wi-teal-rgb), .22), rgba(255, 255, 255, .06) 50%, rgba(var(--wi-gold-rgb), .22)); }

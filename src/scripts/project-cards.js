@@ -97,9 +97,11 @@ export function initProjectCards(sectionEls) {
     const el = st.cards[st.open], r = st.stage.getBoundingClientRect();
     const nav = document.querySelector('.nav'), gap = 16;
     const top = (nav ? nav.getBoundingClientRect().bottom : 0) + gap, bottom = innerHeight - gap * 1.5;
+    const side = navName ? navName.getBoundingClientRect().left : innerWidth * 0.1; // page margin
+    const w = Math.min(innerWidth * 0.8, innerWidth - 2 * side); // never wider than the page frame
     Object.assign(el.style, {
-      left: (innerWidth * 0.1 - r.left) / scale + 'px', top: (top - r.top) / scale + 'px',
-      width: (innerWidth * 0.8) / scale + 'px', height: (bottom - top) / scale + 'px',
+      left: ((innerWidth - w) / 2 - r.left) / scale + 'px', top: (top - r.top) / scale + 'px',
+      width: w / scale + 'px', height: (bottom - top) / scale + 'px',
     });
   }
 

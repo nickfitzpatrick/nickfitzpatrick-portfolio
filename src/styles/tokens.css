@@ -66,6 +66,8 @@
   --gutter: clamp(1.25rem, 4vw, 3.5rem);
   --grid-gap: clamp(1rem, 2vw, 2rem);
   --max: 90rem;
+  /* side padding that keeps content inside a centred --max frame on wide screens (use on full-width blocks) */
+  --page-x: max(var(--gutter), calc((100% - var(--max)) / 2));
   --tap: 2.75rem;        /* 44px minimum touch target */
 
   /* Motion: UI 200 to 600ms, ambience slower. No default easings. */
