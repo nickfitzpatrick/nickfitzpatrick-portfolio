@@ -168,3 +168,14 @@ html.has-cursor .pc :is(a, button, .pc-card) { cursor: none; }
   .pc-net circle[data-s] { display: none; }
   .js .pc-pin .pc-card.open { transform: none; }
 }
+
+/* the self card (SelfCard.astro): this site, as an empty outline the fish swims in.
+   No fill, so the fish (drawn behind the cards) shows through; the edge is a little brighter at rest
+   than the other cards' so the empty card still reads as a card. */
+.pc-self { display: block; }
+.pc-self .pc-edge { opacity: .45; }
+.pc-self:hover .pc-edge, .pc-self.hot .pc-edge { opacity: 1; }
+.pc-self-spot { position: absolute; inset: 0; --spot-x: 50%; --spot-y: 50%; pointer-events: none; }
+@media (max-width: 759px) {
+  .pc-list .pc-self { height: 200px; }
+}

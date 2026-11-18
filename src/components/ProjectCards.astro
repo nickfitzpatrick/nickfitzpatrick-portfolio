@@ -12,6 +12,7 @@ import manifest from '../data/images.json';
 import { CATEGORIES, PROJECTS } from '../data/work-index.js';
 import FishSpot from './FishSpot.astro';
 import ProjectCaseCard from './ProjectCaseCard.astro';
+import SelfCard from './SelfCard.astro';
 
 type Optimised = { widths: number[]; base: string };
 const entries = await getCollection('projects');
@@ -37,6 +38,8 @@ const cards = (id: string) => PROJECTS.filter((p) => p.cats.includes(id)).map((p
   const meta = [['Year', entry.data.date?.slice(0, 4)], ['Categories', p.cats.map(catName).join(', ')]].filter(([, v]) => v);
   return { slug: p.slug, title: p.title, hook: p.hook, thumb: image(entry.data.image), big: image(entry.data.image, 1400), meta, sections: caseStudy(entry.body) };
 });
+// The category whose first card is this site (an empty outline the fish swims in; see SelfCard.astro).
+const SELF_CAT = 'design';
 const categories = CATEGORIES.map((c) => ({ ...c, projects: cards(c.id) })).filter((c) => c.projects.length);
 
 // Layout of the 1280 x 800 stage, as designed: four card slots and the category's gold node.
@@ -55,7 +58,7 @@ const titleLayout = (name: string) => {
 };
 ---
 {categories.map((cat) => {
-  const P = cat.projects, pages = Math.ceil(P.length / 4);
+  const P = cat.projects, self = cat.id === SELF_CAT ? 1 : 0, pages = Math.ceil((P.length + self) / 4);
   const title = titleLayout(cat.name);
   const nextOf = (i: number) => (P.length > 1 ? P[(i + 1) % P.length].title : undefined);
   return (
@@ -65,11 +68,11 @@ const titleLayout = (name: string) => {
           <h2 class="pc-title" id={`pc-${cat.id}`} data-fish-avoid style={`top:${title.top}px`} data-line={TITLE_LINE}>{title.words.map((w) => <span>{w} </span>)}</h2>
           <div class="pc-ticks" style={`top:${title.ticks}px`}>
             {pages > 1 && Array.from({ length: pages }, (_, k) => (
-              <button type="button" class="pc-tick" data-k={k} data-snap><i></i>{pad(k * 4 + 1)}–{pad(Math.min(P.length, k * 4 + 4))}</button>
+              <button type="button" class="pc-tick" data-k={k} data-snap><i></i>{pad(k * 4 + 1)}–{pad(Math.min(P.length + self, k * 4 + 4))}</button>
             ))}
           </div>
           {pages > 1 && <div class="pc-hint" aria-hidden="true">Scroll ↓</div>}
-          <span class="pc-spot"><FishSpot scale={0.5} /></span>
+          {!self && <span class="pc-spot"><FishSpot scale={0.5} /></span>}
           <svg class="pc-net" width="1280" height="800" aria-hidden="true">
             {paths.map((d, s) => (
               <>
@@ -80,13 +83,14 @@ const titleLayout = (name: string) => {
             <circle class="pc-node" cx={NODE[0]} cy={NODE[1]} r="5" fill="#d8b13a" />
             <circle class="pc-node" cx={NODE[0]} cy={NODE[1]} r="14" fill="none" stroke="#d8b13a55" />
           </svg>
-          {P.map((p, i) => <ProjectCaseCard p={p} i={i} category={cat.name} next={nextOf(i)} slot={SLOTS[i % 4]} />)}
+          {self > 0 && <SelfCard slot={SLOTS[0]} />}
+          {P.map((p, i) => <ProjectCaseCard p={p} i={i} category={cat.name} next={nextOf(i)} slot={SLOTS[(i + self) % 4]} />)}
         </div>
       </div>
       {Array.from({ length: pages - 1 }, () => <div class="pc-spacer" aria-hidden="true"></div>)}
       <div class="pc-list">
         <h2>{title.words.map((w) => <span>{w} </span>)}</h2>
-        <span class="pc-list-spot"><FishSpot scale={0.5} /></span>
+        {self > 0 ? <SelfCard /> : <span class="pc-list-spot"><FishSpot scale={0.5} /></span>}
         {P.map((p, i) => <ProjectCaseCard p={p} i={i} category={cat.name} next={nextOf(i)} />)}
       </div>
     </section>
