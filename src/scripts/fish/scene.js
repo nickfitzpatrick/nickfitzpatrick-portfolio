@@ -43,6 +43,10 @@ const ENTRY_SETTLE = 0.7;    // within this many body lengths of the spot it is 
 // Keeping clear of [data-fish-avoid] elements (project cards).
 const BODY_REACH = 0.4;   // how far the body and fins reach from the canvas centre, as a share of the canvas
 const KEEP_CLEAR = 8;     // px of gap kept between the fish and anything it must not cover
+// Spots with data-fish-fill: the fish fills that share of the spot's parent box (the Design self card).
+// Its visible body, side-on, as a share of the canvas (measured from screenshots, fins included).
+const BODY_W = 0.66, BODY_H = 0.6;
+const FILL_WANDER = 0.12; // the figure of eight shrinks to this, so it stays in its box
 const THREE_QUARTER = Math.PI / 2 - 0.42; // side-on, turned slightly toward the viewer
 const wrapAngle = (a) => MathUtils.euclideanModulo(a + Math.PI, Math.PI * 2) - Math.PI;
 const damp = (current, target, rate, dt) => current + (target - current) * (1 - Math.exp(-rate * dt));
@@ -119,7 +123,15 @@ export async function createFish({ canvas, spots, avoid = [], model: modelData, 
     const next = canvas.clientWidth;
     if (next === size) return;
     size = next;
-    renderer.setPixelRatio(Math.min(devicePixelRatio || 1, 2));
+    ratio = 0; sharpen();
+  }
+  // Drawn at up to 2x, and finer while the fish is scaled up (a filled box), so it never looks soft.
+  let ratio = 0, liveScale = 1;
+  function sharpen() {
+    const next = Math.min(Math.min(devicePixelRatio || 1, 2) * Math.max(1, Math.ceil(liveScale * 4) / 4), 3);
+    if (next === ratio || !size) return;
+    ratio = next;
+    renderer.setPixelRatio(ratio);
     renderer.setSize(size, size, false);
   }
   resize();
@@ -153,12 +165,17 @@ export async function createFish({ canvas, spots, avoid = [], model: modelData, 
       const d = Math.abs(r.top - H * 0.42);
       if (d < best) { best = d; rect = r; spot = el; }
     }
-    const scale = Number(spot.dataset.fishScale) || 1; // spots can ask for a smaller, "further away" fish
+    let scale = Number(spot.dataset.fishScale) || 1; // spots can ask for a smaller, "further away" fish
+    const fill = Number(spot.dataset.fishFill) || 0, wander = fill ? FILL_WANDER : 1;
+    if (fill) { const box = spot.parentElement.getBoundingClientRect(); scale = (fill * Math.min(box.width / BODY_W, box.height / BODY_H)) / size; }
     const s = size * scale, m = s * 0.5;
     return {
-      scale,
-      x: MathUtils.clamp(rect.left + Math.sin(t * 0.17) * s * 0.28, m + s * TURN_POINT, Math.max(m, W - m - s * TURN_POINT)),   // slow figure of eight
-      y: MathUtils.clamp(rect.top + Math.sin(t * 0.31 + 1) * s * 0.12, m + EDGE_TOP, Math.max(m + EDGE_TOP, H - m - EDGE_BOTTOM)),
+      scale, fill,
+      // slow figure of eight; a filled box centres the fish's middle, not the point it turns about
+      // (a filled box is not held off the screen edges: on a phone the big fish is nearly as wide as the screen)
+      x: fill ? rect.left + Math.sin(t * 0.17) * s * 0.28 * wander - lead()
+        : MathUtils.clamp(rect.left + Math.sin(t * 0.17) * s * 0.28, m + s * TURN_POINT, Math.max(m, W - m - s * TURN_POINT)),
+      y: MathUtils.clamp(rect.top + Math.sin(t * 0.31 + 1) * s * 0.12 * wander, m + EDGE_TOP, Math.max(m + EDGE_TOP, H - m - EDGE_BOTTOM)),
     };
   }
 
@@ -217,7 +234,7 @@ export async function createFish({ canvas, spots, avoid = [], model: modelData, 
     const clear = zones();
     keepGoalClear(goal, clear);
     let tx = goal.x, ty = goal.y;
-    if (now < pointer.until) {
+    if (now < pointer.until && !goal.fill) { // in a filled box it stays put
       const dx = pointer.x - fish.x, dy = pointer.y - fish.y, d = Math.hypot(dx, dy) || 1;
       const near = size * 0.55, aware = size * 1.6;
       if (d < near) { tx -= (dx / d) * (near - d) * 1.6; ty -= (dy / d) * (near - d) * 1.6; }        // gives way
@@ -241,6 +258,11 @@ export async function createFish({ canvas, spots, avoid = [], model: modelData, 
     fish.speed = damp(fish.speed, cruise, gain < 0 ? 3.2 : 1.5, dt); // brakes faster than it accelerates, so it settles instead of overshooting
     fish.x += Math.cos(fish.heading) * fish.speed * dt;
     fish.y += Math.sin(fish.heading) * fish.speed * dt;
+    if (goal.fill) { // in a filled box: once it has arrived, ease onto the centre and hover there, fins still going
+      const s = size * goal.scale, held = MathUtils.clamp(1.4 - dist / (s * 0.5), 0, 1);
+      fish.x = damp(fish.x, tx, 2.5 * held, dt); fish.y = damp(fish.y, ty, 2.5 * held, dt);
+      fish.speed = damp(fish.speed, 0, 2 * held, dt);
+    }
     // How hard it is working: mostly speed, plus a kick while accelerating or turning.
     const work = fish.speed / (size * 1.1) + Math.max(0, gain) / (size * 2.5) + Math.abs(fish.turn) * 0.06 + Math.abs(fish.yawVel) * 0.1; // turning round takes a few quick beats
     fish.effort = damp(fish.effort, MathUtils.clamp(work, 0, 1), 3, dt);
@@ -273,6 +295,7 @@ export async function createFish({ canvas, spots, avoid = [], model: modelData, 
     const dt = MathUtils.clamp((now - last) / 1000, 0.001, 0.05); last = now;
     step(dt, now);
     const bob = Math.sin(clock * 1.2) * size * 0.012;
+    liveScale = fish.scale; sharpen();
     const middle = fish.x + lead();
     canvas.style.transform = `translate3d(${(middle - size / 2).toFixed(1)}px, ${(fish.y + bob - size / 2).toFixed(1)}px, 0) scale(${fish.scale.toFixed(3)})`;
     const h = size * fish.scale * 0.5;

@@ -177,5 +177,5 @@ html.has-cursor .pc :is(a, button, .pc-card) { cursor: none; }
 .pc-self:hover .pc-edge, .pc-self.hot .pc-edge { opacity: 1; }
 .pc-self-spot { position: absolute; inset: 0; --spot-x: 50%; --spot-y: 50%; pointer-events: none; }
 @media (max-width: 759px) {
-  .pc-list .pc-self { height: 200px; }
+  .pc-list .pc-self { aspect-ratio: 5 / 4; } /* tall enough for a big fish */
 }
