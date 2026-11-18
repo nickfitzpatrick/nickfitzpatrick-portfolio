@@ -8,11 +8,11 @@
 //             `cats` lists category ids. Two or more = the dot sits between hubs and glows gold.
 export const CATEGORIES = [
   // Array order = order of the category sections down the page; `pos` only places the hub.
-  { name: 'AI', id: 'ai', pos: [0.20, 0.27] },
-  { name: 'Design', id: 'design', pos: [0.80, 0.27] },
-  { name: 'Machine Learning', id: 'ml', pos: [0.22, 0.60] }, // between AI and Data: it bridges the two
-  { name: 'Data', id: 'data', pos: [0.44, 0.84] },
-  { name: 'Optimization', id: 'optimization', pos: [0.78, 0.70] },
+  { name: 'AI', id: 'ai', pos: [0.20, 0.25] },
+  { name: 'Design', id: 'design', pos: [0.80, 0.25] },
+  { name: 'Machine Learning', id: 'ml', pos: [0.24, 0.74] },
+  { name: 'Data', id: 'data', pos: [0.80, 0.76] },
+  { name: 'Optimization', id: 'optimization', pos: [0.54, 0.62] },
   { name: 'Product', id: 'product', pos: [0.50, 0.15] },
 ];
 
