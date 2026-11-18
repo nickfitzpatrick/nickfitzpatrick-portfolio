@@ -46,7 +46,10 @@ const KEEP_CLEAR = 8;     // px of gap kept between the fish and anything it mus
 // Spots with data-fish-fill: the fish fills that share of the spot's parent box (the Design self card).
 // Its visible body, side-on, as a share of the canvas (measured from screenshots, fins included).
 const BODY_W = 0.66, BODY_H = 0.6;
-const FILL_WANDER = 0.12; // the figure of eight shrinks to this, so it stays in its box
+const FILL_WANDER = 0.12;
+// Facing right, the visible fish sits off to the right of its canvas (by eye, from screenshots); this
+// share of the canvas pulls it back to the middle so its face doesn't touch the box edge.
+const FILL_FACE_RIGHT = 0.08; // the figure of eight shrinks to this, so it stays in its box
 const THREE_QUARTER = Math.PI / 2 - 0.42; // side-on, turned slightly toward the viewer
 const wrapAngle = (a) => MathUtils.euclideanModulo(a + Math.PI, Math.PI * 2) - Math.PI;
 const damp = (current, target, rate, dt) => current + (target - current) * (1 - Math.exp(-rate * dt));
@@ -173,7 +176,7 @@ export async function createFish({ canvas, spots, avoid = [], model: modelData, 
       scale, fill,
       // slow figure of eight; a filled box centres the fish's middle, not the point it turns about
       // (a filled box is not held off the screen edges: on a phone the big fish is nearly as wide as the screen)
-      x: fill ? rect.left + Math.sin(t * 0.17) * s * 0.28 * wander - lead()
+      x: fill ? rect.left + Math.sin(t * 0.17) * s * 0.28 * wander - lead() - s * FILL_FACE_RIGHT * Math.max(0, Math.sin(fish.yaw) / Math.sin(THREE_QUARTER))
         : MathUtils.clamp(rect.left + Math.sin(t * 0.17) * s * 0.28, m + s * TURN_POINT, Math.max(m, W - m - s * TURN_POINT)),
       y: MathUtils.clamp(rect.top + Math.sin(t * 0.31 + 1) * s * 0.12 * wander, m + EDGE_TOP, Math.max(m + EDGE_TOP, H - m - EDGE_BOTTOM)),
     };
