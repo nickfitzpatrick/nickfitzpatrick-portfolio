@@ -4,7 +4,9 @@
 //  - keyboard: Enter or Space opens a card and focus moves to its close button; Esc or × closes
 //    and returns focus to the card; tabbing to a card on another page scrolls to that page;
 //  - reduced motion: no tilt, no smooth scrolling;
-//  - the custom cursor ring only grows over closed cards.
+//  - the custom cursor ring only grows over closed cards;
+//  - a [data-self] card (SelfCard.astro: this site, an empty outline the fish swims in) has no case
+//    study: clicking it goes back to the top of the page.
 import { reducedMotion } from './env.js';
 
 const SLOTS = [[520, 70], [880, 150], [560, 430], [920, 500]];
@@ -23,6 +25,14 @@ export function initProjectCards(sectionEls) {
     st.n = st.cards.length;
     st.cards.forEach((el, i) => {
       place(el, i);
+      if (el.dataset.self !== undefined) {
+        el.addEventListener('mouseenter', () => { if (st.open < 0) { st.hot = i; paint(st); } });
+        el.addEventListener('mouseleave', () => { if (st.open < 0) { st.hot = -1; paint(st); } });
+        el.addEventListener('focus', () => { if (st.open < 0) { if (Math.floor(i / 4) !== st.cur) jump(st, Math.floor(i / 4)); st.hot = i; paint(st); } });
+        el.addEventListener('blur', () => { if (st.open < 0) { st.hot = -1; paint(st); } });
+        el.addEventListener('click', toTop);
+        return;
+      }
       el.addEventListener('mouseenter', () => { if (st.open < 0) { st.hot = i; paint(st); } });
       el.addEventListener('mouseleave', () => { if (st.open < 0) { st.hot = -1; paint(st); } el.style.setProperty('--tx', 0); el.style.setProperty('--ty', 0); });
       el.addEventListener('click', (e) => { if (st.open < 0) { e.stopPropagation(); settleThenOpen(st, i); } });
@@ -50,13 +60,14 @@ export function initProjectCards(sectionEls) {
       });
       el.querySelector('.pc-x').addEventListener('click', (e) => { e.stopPropagation(); closeCard(st); });
       const nx = el.querySelector('.pc-next');
-      if (nx) nx.addEventListener('click', (e) => { e.stopPropagation(); openCard(st, (i + 1) % st.n); });
+      if (nx) nx.addEventListener('click', (e) => { e.stopPropagation(); openCard(st, nextCard(st, i)); });
     });
     sec.querySelector('.pc-pin').addEventListener('click', (e) => { if (st.open >= 0 && !e.target.closest('.pc-card.open')) closeCard(st); });
     stage.querySelectorAll('.pc-tick').forEach((b) => b.addEventListener('click', () => jump(st, Number(b.dataset.k))));
 
     // small screens: tap to expand inline
-    const listCards = st.list = [...sec.querySelectorAll('.pc-list .pc-card')];
+    const listCards = st.list = [...sec.querySelectorAll('.pc-list .pc-card:not([data-self])')];
+    sec.querySelectorAll('.pc-list [data-self]').forEach((el) => el.addEventListener('click', toTop));
     // while any card is open it fills the screen, so the fish swims behind the cards instead of leaving
     const syncFish = () => {
       const anyOpen = listCards.some((c) => c.classList.contains('expanded'));
@@ -85,6 +96,20 @@ export function initProjectCards(sectionEls) {
     return st;
   });
   if (!sections.length) return;
+
+  // The self card: back to the top of the page, with keyboard focus on the site name there.
+  function toTop(e) {
+    e.preventDefault(); e.stopPropagation();
+    window.scrollTo({ top: 0, behavior: reduced ? 'auto' : 'smooth' });
+    navName?.focus({ preventScroll: true });
+  }
+
+  // "Next in <category>": the following project card, skipping the self card.
+  function nextCard(st, i) {
+    let j = i;
+    do j = (j + 1) % st.n; while (st.cards[j].dataset.self !== undefined && j !== i);
+    return j;
+  }
 
   function jump(st, k) {
     window.scrollTo({ top: st.sec.offsetTop + k * innerHeight, behavior: reduced ? 'auto' : 'smooth' });
@@ -235,7 +260,7 @@ export function initProjectCards(sectionEls) {
   // hook lines that fit above the buffer (measured once fonts are in, since line widths change).
   function fitHooks(st) {
     st.cards.forEach((el) => {
-      if (el.classList.contains('open')) return;
+      if (el.classList.contains('open') || el.dataset.self !== undefined) return;
       const t = el.querySelector('.pc-t'), h = el.querySelector('.pc-h');
       const line = parseFloat(getComputedStyle(h).lineHeight) || 19.5;
       const room = TEXT_BOTTOM - (t.offsetTop + t.offsetHeight + 8); // offsets within the card's scroll box; 8: title-to-hook gap
