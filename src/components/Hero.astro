@@ -19,7 +19,7 @@ const { lines, lede, rotate } = Astro.props;
 
 <style>
   .hero {
-    --spot-x: 73%; --spot-y: 40%;
+    --spot-x: calc(50% + min(50%, var(--max) / 2) * 0.46); /* 73% up to the frame width */ --spot-y: 40%;
     position: relative; min-height: 100vh; min-height: 100svh;
     display: flex; align-items: flex-end;
     padding: var(--space-8) var(--gutter) var(--space-6);

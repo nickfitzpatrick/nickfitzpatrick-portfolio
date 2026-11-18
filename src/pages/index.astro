@@ -49,7 +49,7 @@ const builds = [
 
 <style>
   /* the fish rests in the right-hand margin of the Work Index (it may only swim the section's edges) */
-  .work { --spot-x: 94%; --spot-y: 46%; position: relative; }
+  .work { --spot-x: calc(50% + min(50%, var(--max) / 2) * 0.88); /* 94% up to the frame width */ --spot-y: 46%; position: relative; }
   @media (max-width: 767px) {
     .work { --spot-x: 78%; --spot-y: 0%; } /* no side margin on phones: it waits just above the section */
   }

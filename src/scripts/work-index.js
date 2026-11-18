@@ -20,14 +20,14 @@ function openProject(p, k, cats) {
 
 export function initWorkIndex(root) {
   const { categories: CATEGORIES, projects: PROJECTS } = JSON.parse(root.querySelector('[data-work-index-data]').textContent);
-  const cv = root.querySelector('canvas'), ctx = cv.getContext('2d');
+  const cv = root.querySelector('canvas'), ctx = cv.getContext('2d'), frameEl = root.querySelector('.wi-frame');
   const card = root.querySelector('.wi-card'), list = root.querySelector('.wi-list'), listEl = root.querySelector('.wi-list-inner');
   const css = getComputedStyle(root), token = (name) => css.getPropertyValue(name).trim();
   const TEAL = token('--wi-wire-rgb'), GOLD = token('--wi-gold-rgb'), INK = token('--wi-ink-rgb');
   const MONO = `12px ${token('--font-wi-mono')}`;
   const reduced = reducedMotion();
   const narrow = matchMedia(NARROW);
-  let W, H, dpr = Math.min(devicePixelRatio || 1, 2), simple = narrow.matches, hubHover = -1, dotHover = -1, simCat = 0;
+  let FX = 0, FW = 0, W, H, dpr = Math.min(devicePixelRatio || 1, 2), simple = narrow.matches, hubHover = -1, dotHover = -1, simCat = 0;
   let pulses = [], lastPulse = 0, raf = 0, onScreen = true, simpleSince = -1e9;
 
   // hubs
@@ -59,11 +59,12 @@ export function initWorkIndex(root) {
     });
     wake();
   }
-  function hubXY() { return CATEGORIES.map((c) => [c.pos[0] * W, c.pos[1] * H]); }
+  function hubXY() { return CATEGORIES.map((c) => [FX + c.pos[0] * FW, c.pos[1] * H]); }
   function placeHubs() {
     const width = root.clientWidth;
+    FX = frameEl.offsetLeft; FW = frameEl.offsetWidth; // hubs sit in the centred frame, not the full width
     if (!simple) {
-      CATEGORIES.forEach((c, i) => { hubs[i].style.left = c.pos[0] * 100 + '%'; hubs[i].style.top = c.pos[1] * 100 + '%'; });
+      CATEGORIES.forEach((c, i) => { hubs[i].style.left = FX + c.pos[0] * FW + 'px'; hubs[i].style.top = c.pos[1] * 100 + '%'; });
       root.style.removeProperty('--wi-list-top'); root.style.height = '';
       return;
     }
@@ -118,7 +119,7 @@ export function initWorkIndex(root) {
     card.querySelector('.h').textContent = p.hook;
     setThumb(card.querySelector('.wi-thumb'), p.img);
     card.style.left = n.x + 'px'; card.style.top = n.y + 'px';
-    card.style.transform = `translate(${n.x > W * 0.7 ? 'calc(-100% - 14px)' : '14px'}, -50%)`;
+    card.style.transform = `translate(${n.x > FX + FW * 0.7 ? 'calc(-100% - 14px)' : '14px'}, -50%)`;
     card.classList.add('show');
   }
 
