@@ -2,11 +2,12 @@
 // A point the fish swims to and rests near while its section is in view.
 // The parent positions it with --spot-x / --spot-y. `loader` shows a small
 // bubble here until the fish has loaded. `scale` below 1 makes the fish
-// smaller at this spot, as if it had swum further away.
-interface Props { loader?: boolean; scale?: number }
-const { loader = false, scale = 1 } = Astro.props;
+// smaller at this spot, as if it had swum further away. `fill` (0–1) instead sizes the fish to fill
+// that share of the spot's parent box, and keeps it there: it barely wanders and ignores the cursor.
+interface Props { loader?: boolean; scale?: number; fill?: number }
+const { loader = false, scale = 1, fill } = Astro.props;
 ---
-<span class="fish-spot" data-fish-spot data-fish-scale={scale} aria-hidden="true">{loader && <span class="fish-spot__loader"></span>}</span>
+<span class="fish-spot" data-fish-spot data-fish-scale={scale} data-fish-fill={fill} aria-hidden="true">{loader && <span class="fish-spot__loader"></span>}</span>
 
 <style>
   .fish-spot { position: absolute; left: var(--spot-x, 50%); top: var(--spot-y, 50%); width: 0; height: 0; z-index: var(--z-fish); pointer-events: none; }
