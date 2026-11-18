@@ -96,11 +96,11 @@
 .pc-pin .pc-card:not(.open) .pc-h[data-lines="0"] { display: none; }
 
 /* case-study scrollbar: thin and quiet, kept off the rounded corners (track inset by the corner radius) */
-.pc-scroll::-webkit-scrollbar { width: 4px; }
+.pc-scroll::-webkit-scrollbar { width: 6px; }
 .pc-scroll::-webkit-scrollbar-track { background: transparent; margin-block: 28px; }
-.pc-scroll::-webkit-scrollbar-thumb { background: #1fc3c330; border-radius: 4px; }
-.pc-scroll::-webkit-scrollbar-thumb:hover { background: #1fc3c360; }
-@supports not selector(::-webkit-scrollbar) { .pc-scroll { scrollbar-width: thin; scrollbar-color: #1fc3c330 transparent; } } /* Firefox */
+.pc-scroll::-webkit-scrollbar-thumb { background: #1fc3c34d; border-radius: 6px; }
+.pc-scroll::-webkit-scrollbar-thumb:hover { background: #1fc3c380; }
+@supports not selector(::-webkit-scrollbar) { .pc-scroll { scrollbar-width: thin; scrollbar-color: #1fc3c34d transparent; } } /* Firefox */
 
 /* card: receding while another is open */
 .js .pc-stage.is-open .pc-card.on:not(.open) { opacity: .5; filter: blur(4px); transform: scale(.88); pointer-events: none; }
